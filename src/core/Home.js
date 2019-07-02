@@ -1,6 +1,7 @@
 import React from 'react';
-import Researches from '../research/Researches'
+import Researches from '../research/Researches';
 
+console.log(process.env.REACT_APP_API_URL);
 const Home = () => (
     <div>
         <div className="jumbotron">
