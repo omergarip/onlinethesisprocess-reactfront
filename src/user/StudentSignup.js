@@ -76,7 +76,7 @@ class StudentSignup extends Component {
                    department, bannerId ) => (
 
     	<form>
-        <div className="card" style={{width: "33.5rem", height: "33rem"}}>
+        <div className="card signupCard"  style={{width: "33.5rem", height: "33rem"}}>
 			<div className="card-header">
 				<h3>Sign Up</h3>
 			</div>

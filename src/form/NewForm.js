@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { isAuthenticated } from '../auth';
 import { Redirect, Link } from "react-router-dom";
 import { getAdviserByStudentId } from "../adviser/apiAdviser";
+import { read, createProcess, deleteProcess } from '../studentProcess/apiStudentProcess';
 import { create } from "./apiForm";
 import '../css/profile.css';
 import Logo from '../images/ylogo.png'
@@ -10,11 +11,16 @@ class NewForm extends Component {
     constructor() {
         super()
         this.state = {
+            adviserId: '',
             advisers: "",
             address: "",
             proposedTitle: "",
+            city: '',
+            zipcode: '',
+            state: '',
             date: "",
-            redirectToSignin: false
+            studentProcess: [],
+            redirectToProfile: false
         }
     }
     
@@ -25,9 +31,19 @@ class NewForm extends Component {
             if(data.error) {
                 console.log(data.error)
             } else {
-                this.setState({ advisers: data[0].requestedTo });
+                this.setState({ 
+                    advisers: data[0].requestedTo,
+                    adviserId: data[0].requestedTo._id
+                });
             }
         });
+        read(userId, token).then(data => {
+			if (data.error) {
+				console.log(data.error);
+			} else {
+				this.setState({ studentProcess: data });
+			}
+		});
     }
     
     isValid = () => {
@@ -54,9 +70,9 @@ class NewForm extends Component {
             const studentId = isAuthenticated().user._id;
             const token = isAuthenticated().token;
             const adviserId = this.state.advisers._id
-            const { proposedTitle, address, date } = this.state;
+            const { proposedTitle, address, date, zipcode, city, state } = this.state;
             const form = {
-                studentId, adviserId, address, proposedTitle, date 
+                studentId, adviserId, address, proposedTitle, date, zipcode, city, state
             };
             create(studentId, token, form).then(data => {
                 if (data.error) {
@@ -64,18 +80,47 @@ class NewForm extends Component {
                 } else {
                     this.setState({ 
                         loading: false,
-                        proposedTitle: '',
-                        date: '',
                         redirectToProfile: true
                     })    
                 }
             });
+            const userId = isAuthenticated().user._id;
+    		const pId = this.state.studentProcess[0]._id;
+    		const topic = this.state.studentProcess[0].topic._id;
+    		const topicStatus = true;
+    		const studentInfo = userId;
+			const adviser = this.state.adviserId;
+    		const adviserStatus = true;
+    		const formStatus = true;
+    		const data = {
+    			studentInfo, topic, topicStatus, adviser, adviserStatus, formStatus
+    		};
+    		console.log(data)
+    		deleteProcess(userId, token, pId).then(data => {
+    			if (data.error) {
+    				this.setState({ error: data.error });
+    			} else {
+    				this.setState({
+    					loading: false
+    				});
+    			}
+    		});
+    		createProcess(userId, token, data).then(data => {
+    			if (data.error) {
+    				this.setState({ error: data.error })
+    			}
+    			else {
+    				this.setState({
+    					loading: false
+    				});
+    			}
+    		})
         }
     };
 
     render() {
-        const { redirectToSignin, advisers } = this.state
-        if(redirectToSignin) return <Redirect to="/signin" />
+        const { redirectToProfile, advisers } = this.state
+        if(redirectToProfile) return <Redirect to={`/user/${isAuthenticated().user._id}/thesis-form`} />
             
         return (
             <div class="container main-secction" >
@@ -124,6 +169,30 @@ class NewForm extends Component {
                             <label className="text-muted">Address</label>
                             <input
                                 onChange={this.handleChange("address")}   
+                                type="text"
+                                className="form-control"
+                            />
+                        </div>
+                        <div className="form-group col-md-6">
+                            <label className="text-muted">City</label>
+                            <input
+                                onChange={this.handleChange("city")}   
+                                type="text"
+                                className="form-control"
+                            />
+                        </div>
+                        <div className="form-group col-md-3">
+                            <label className="text-muted">State</label>
+                            <input
+                                onChange={this.handleChange("state")}   
+                                type="text"
+                                className="form-control"
+                            />
+                        </div>
+                        <div className="form-group col-md-3">
+                            <label className="text-muted">Zip Code</label>
+                            <input
+                                onChange={this.handleChange("zipcode")}   
                                 type="text"
                                 className="form-control"
                             />

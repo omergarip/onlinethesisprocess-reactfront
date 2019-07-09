@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { isAuthenticated } from '../auth';
 import { Redirect, Link } from "react-router-dom";
+import { read, createProcess, deleteProcess } from '../studentProcess/apiStudentProcess';
 import { getRequestsByUser, accept, remove } from "../adviser/apiAdviser";
-import { read } from "./apiUser";
 import '../css/profile.css';
 
 class RequestProfile extends Component {
@@ -10,7 +10,9 @@ class RequestProfile extends Component {
         super()
         this.state = {
             requests: [],
-            redirectToSignin: false
+            studentId: '',
+            redirectToSignin: false,
+            studentProcess: []
         }
     }
     
@@ -22,9 +24,20 @@ class RequestProfile extends Component {
             if(data.error) {
                 console.log(data.error)
             } else {
-                this.setState({ requests: data});
+                this.setState({ 
+                    requests: data,
+                    studentId: data[0].requestedFrom._id
+                });
             }
         });
+        console.log(this.state.requests)
+        read(userId, token).then(data => {
+			if (data.error) {
+				console.log(data.error);
+			} else {
+				this.setState({ studentProcess: data });
+			}
+		});
     }
     
     shouldComponentUpdate(nextProps, nextState) {
@@ -33,7 +46,9 @@ class RequestProfile extends Component {
     componentDidUpdate(prevProps, prevState, snapshot) {
         const userId = isAuthenticated().user._id
         const token = isAuthenticated().token
+        const studentId = this.state.studentId
         if (this.state.requests === prevState.requests) {
+            
             getRequestsByUser(userId, token)
             .then(data => {
                 if(data.error) {
@@ -42,6 +57,13 @@ class RequestProfile extends Component {
                     this.setState({ requests: data});
                 }
             });
+            read(studentId, token).then(data => {
+    			if (data.error) {
+    				console.log(data.error);
+    			} else {
+    				this.setState({ studentProcess: data });
+    			}
+    		});
         }
     }
     
@@ -64,6 +86,36 @@ class RequestProfile extends Component {
                 })    
             }
         });
+        const userId = isAuthenticated().user._id;
+		const pId = this.state.studentProcess[0]._id;
+		const topic = this.state.studentProcess[0].topic._id;
+		const topicStatus = true;
+		const studentInfo = this.state.studentProcess[0].studentInfo._id;
+		const adviser = isAuthenticated().user._id;
+		const adviserStatus = true;
+		const data = {
+			studentInfo, topic, topicStatus, adviser, adviserStatus
+		};
+		console.log(data)
+		deleteProcess(userId, token, pId).then(data => {
+			if (data.error) {
+				this.setState({ error: data.error });
+			} else {
+				this.setState({
+					loading: false
+				});
+			}
+		});
+		createProcess(userId, token, data).then(data => {
+			if (data.error) {
+				this.setState({ error: data.error })
+			}
+			else {
+				this.setState({
+					loading: false
+				});
+			}
+		})
     };
     
     rejectRequest = event => {
@@ -82,6 +134,7 @@ class RequestProfile extends Component {
                 })    
             }
         });
+        
     };
     
     render() {

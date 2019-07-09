@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { getResearch } from './apiResearch';
-import { read, updateProcess } from '../studentProcess/apiStudentProcess';
+import { read, createProcess, deleteProcess } from '../studentProcess/apiStudentProcess';
 import { isAuthenticated } from '../auth';
 import '../css/main.css';
 import { Link } from 'react-router-dom';
@@ -67,7 +67,7 @@ class ShowResearch extends Component {
 			studentInfo, topic, topicStatus
 		};
 		console.log(data)
-		updateProcess(userId, token, pId, data).then(data => {
+		deleteProcess(userId, token, pId).then(data => {
 			if (data.error) {
 				this.setState({ error: data.error });
 			} else {
@@ -76,6 +76,16 @@ class ShowResearch extends Component {
 				});
 			}
 		});
+		createProcess(userId, token, data).then(data => {
+			if (data.error) {
+				this.setState({ error: data.error })
+			}
+			else {
+				this.setState({
+					loading: false
+				});
+			}
+		})
 	};
 
 	renderPosts = (research, createdBy, studentProcess) => (
@@ -104,7 +114,7 @@ class ShowResearch extends Component {
 					) : (
 						studentProcess.map(
 							(data, i) =>
-								data.studentInfo._id === isAuthenticated().user._id ? (
+								data.studentInfo._id === isAuthenticated().user._id && !data.topicStatus ? (
 									<button onClick={this.clickSubmit} className="btn btn-info">
 										Select This Topic
 									</button>
@@ -114,8 +124,8 @@ class ShowResearch extends Component {
 											You have selected this topic for your thesis. Now, you
 											can select your adviser.
 										</p>
-										<Link className="btn btn-primary" to="/faculty-members">
-											Select Adviser
+										<Link className="btn btn-primary" to={`/user/${isAuthenticated().user._id}/thesis-process`}>
+											Go Back to Your Profile
 										</Link>
 									</div>
 								)

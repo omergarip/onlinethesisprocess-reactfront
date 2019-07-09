@@ -5,6 +5,7 @@ import { getAdvisers, accept, remove } from '../adviser/apiAdviser';
 import { create } from '../review/apiReview';
 import { createProcess, read } from '../studentProcess/apiStudentProcess';
 import '../css/profile.css';
+import '../css/process.css';
 
 class ProcessProfile extends Component {
 	constructor() {
@@ -13,7 +14,11 @@ class ProcessProfile extends Component {
 			studentProcess: [],
 			redirectToReview: false,
 			loading: false,
-			newProcess: false
+			newProcess: false,
+			topicStatus: false,
+			adviserStatus: false,
+			formStatus: false,
+			reviewStatus: false
 		};
 	}
 
@@ -26,8 +31,16 @@ class ProcessProfile extends Component {
 			} else {
 				if (data.length === 0)
 					this.setState({ newProcess: true });
-				else
-					this.setState({ studentProcess: data });
+				else {
+					this.setState({ 
+						studentProcess: data,
+						topicStatus: data[0].topicStatus,
+						adviserStatus: data[0].adviserStatus,
+						formStatus: data[0].formStatus,
+						reviewStatus: data[0].reviewStatus
+					});
+				}
+					
 			}
 		});
 	}
@@ -46,7 +59,13 @@ class ProcessProfile extends Component {
 					if (data.length === 0)
 						this.setState({ newProcess: true });
 					else
-						this.setState({ studentProcess: data });
+						this.setState({ 
+							studentProcess: data,
+							topicStatus: data[0].topicStatus,
+							adviserStatus: data[0].adviserStatus,
+							formStatus: data[0].formStatus,
+							reviewStatus: data[0].reviewStatus
+						});
 				}
 			});
 		}
@@ -94,84 +113,225 @@ class ProcessProfile extends Component {
 	};
 
 	render() {
-		const { redirectToReview, requests, studentProcess, newProcess } = this.state;
+		const { redirectToReview, studentProcess, topicStatus, adviserStatus, formStatus, reviewStatus, newProcess } = this.state;
 
 		if (redirectToReview)
 			return <Redirect to={`/user/${isAuthenticated().user._id}/new-review`} />;
 
 		return (
 			<div className="container">
-				{newProcess ? (
-					<div className="container jumbotron">
-						<h1 className="display-6 text-center">
-							YSU Online Thesis Process Management System
-						</h1>
-						<p className="lead">
-							This is the page that you can keep track of your thesis process. If you
-							are ready to start journey, please click button below!
-						</p>
-						<div className="d-flex justify-content-center">
-							<button 
-								className="btn btn-info mt-4"
-								onClick={ this.newStudentProcess }>
-									Start your process.
-							</button>
+				{	newProcess ? (
+						<div className="container jumbotron">
+							<h1 className="display-6 text-center">
+								YSU Online Thesis Process Management System
+							</h1>
+							<p className="lead">
+								This is the page that you can keep track of your thesis process. If you
+								are ready to start journey, please click button below!
+							</p>
+							<div className="d-flex justify-content-center">
+								<button 
+									className="btn btn-info mt-4"
+									onClick={ this.newStudentProcess }>
+										Start your process.
+								</button>
+							</div>
+						</div>
+					) :  ''	
+				}
+				<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+					<div class="panel panel-default">
+						
+						
+						<div class="panel-heading" role="tab" id="headingOne">
+							<h4 class="panel-title">
+								<a className={ topicStatus ? "collapsed status" : "collapsed"} role="button" data-toggle="collapse" 
+									data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+									Select Research Topic { topicStatus ? <span class="checkmark">&#10003;</span> : ''}
+								</a>
+							</h4>
+						</div>
+						<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+							<div class="panel-body">
+								{
+									!topicStatus ? (
+										<div>
+											<p className="lead process-text text-center">
+												The first thing is to select research topic. 
+											</p> 
+											<p className="lead process-text text-center">
+												Click button to find research topics.
+											</p> 
+											<div className="d-flex justify-content-center">
+												<Link
+													to={`/researches`}	>
+														Find Research Topic
+												</Link>
+											</div>
+										</div> )
+										: (
+										<div>
+											<p className="lead process-text text-center">
+												You have selected the researc topic.
+											</p>
+											<div className="d-flex justify-content-center">
+												<Link
+													to={`/research/${studentProcess[0].topic._id}`}	>
+														{ studentProcess[0].topic.title }
+												</Link>
+											</div>
+										</div>
+										)			
+								}
+							</div>
+						</div>
+						
+				{   topicStatus ? (	
+						<div>	
+							<div class="panel-heading mt-4" role="tab" id="headingOne">
+								<h4 class="panel-title">
+									<a className={adviserStatus ? "collapsed status" : "collapsed"} role="button" data-toggle="collapse" 
+									data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+										Select Adviser { adviserStatus ? <span class="checkmark">&#10003;</span> : ''}
+									</a>
+								</h4>
+							</div>
+							<div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+								<div class="panel-body">
+									{
+										!adviserStatus ? 
+										<div>
+											<p className="lead process-text text-center">
+												Now, You can select your adviser.
+											</p>
+											<p className="lead process-text text-center">
+												Click button to find your adviser.
+											</p>
+											<div className="d-flex justify-content-center">
+												<Link
+													to={`/faculty-members`}
+													className="btn btn-info">
+														Select Adviser.
+												</Link>
+											</div>
+										</div> : 
+										<div>
+											<p className="lead process-text text-center">
+												You have selected your adviser.
+											</p>
+											<div className="d-flex justify-content-center">
+												<Link
+													to={`/user/${studentProcess[0].adviser._id}`}
+												>
+														{studentProcess[0].adviser.fname} {studentProcess[0].adviser.lname}
+												</Link>
+											</div>
+										</div>
+									} 		
+								</div>
+							</div>
+						</div>
+					): ''
+				}
+				{   topicStatus && adviserStatus ? (	
+					<div>	
+						<div class="panel-heading mt-4" role="tab" id="headingOne">
+							<h4 class="panel-title">
+								<a className={formStatus ? "collapsed status" : "collapsed"} role="button" data-toggle="collapse" 
+								data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+									Supervisor Appointment Form { formStatus ? <span class="checkmark">&#10003;</span> : ''}
+								</a>
+							</h4>
+						</div>
+						<div id="collapseThree" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+							<div class="panel-body">
+								{
+									!formStatus ? 
+									<div>
+										<p className="lead process-text text-center">
+											Now, You need to fill out 'Supervisor Appointment Form'.
+										</p>
+										<p className="lead process-text text-center">
+											Click button to fill out the form.
+										</p>
+										<div className="d-flex justify-content-center">
+											<Link
+												to={`/user/${isAuthenticated().user._id}/thesis-form`}
+												className="btn btn-info">
+													Go to the form.
+											</Link>
+										</div>
+									</div> : 
+									<div>
+										<p className="lead process-text text-center">
+											You have filled out 'Supervisor Appointment Form' .
+										</p>
+										<div className="d-flex justify-content-center">
+											<Link
+												to={`/user/${isAuthenticated().user._id}/thesis-form`}
+											>
+												View Form
+											</Link>
+										</div>
+									</div>
+								} 		
+							</div>
 						</div>
 					</div>
-				) : (		
-						studentProcess.map(
-						(process, i) =>
-							process.topicStatus === false ? (
-								<div className="container jumbotron">
-									<h1 className="display-6 text-center">
-										Select Research Topic
-									</h1>
-									<p className="lead text-center">
-										The first thing is to select research topic. 
-									</p>
-									<p className="lead text-center">
-										Click button to find research topics.
-									</p>
-									<div className="d-flex justify-content-center">
-										<Link
-											to={`/researches`}
-											className="my-5 btn btn-info">
-												Select Research Topic.
-										</Link>
-									</div>
-								</div>
-							) : process.topicStatus === true && process.reviewStatus === false ? (
-								<div className="container jumbotron">
-									<h1 className="display-6 text-center">
-										Select Research Topic
-									</h1>
-									<p className="lead text-center">
-										The first thing is to select research topic. 
-									</p>
-									<p className="lead text-center">
-										Click button to find research topics.
-									</p>
-									<div className="d-flex justify-content-center">
-										<Link
-											to={`/user/${isAuthenticated().user._id}/thesis-form`}
-											className="my-5 btn btn-info mx-auto form-control disabled">
-												You have selected the research topic.
-										</Link>
-										<Link
-											to={`/user/${isAuthenticated().user._id}/thesis-form`}>
-												You have selected the research topic.
-										</Link>
-										<button onClick={this.newReview} className="my-5 btn btn-info mx-auto form-control">
-											Create Literature Review
-										</button> 
-									</div>
-								</div>
-								
-							) : ''
+					): ''	
+				}
 				
-						)
-				)}
-
+				{   topicStatus && adviserStatus && formStatus ? (	
+					<div>	
+						<div class="panel-heading mt-4" role="tab" id="headingOne">
+							<h4 class="panel-title">
+								<a className={reviewStatus ? "collapsed status" : "collapsed"} role="button" data-toggle="collapse" 
+								data-parent="#accordion" href="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
+									Introduction { reviewStatus ? <span class="checkmark">&#10003;</span> : ''}
+								</a>
+							</h4>
+						</div>
+						<div id="collapseFour" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+							<div class="panel-body">
+								{
+									!reviewStatus ? 
+									<div>
+										<p className="lead process-text text-center">
+											Now, You need to write the Introduction of the Problem.
+										</p>
+										<p className="lead process-text text-center">
+											Click button to write Introduction.
+										</p>
+										<div className="d-flex justify-content-center">
+											<button
+												onClick={this.newReview}
+												className="btn btn-info">
+													Introduction
+											</button>
+										</div>
+									</div> : 
+									<div>
+										<p className="lead process-text text-center">
+											You have filled out 'Supervisor Appointment Form' .
+										</p>
+										<div className="d-flex justify-content-center">
+											<Link
+												to={`/user/${isAuthenticated().user._id}/thesis-form`}
+											>
+												View Form
+											</Link>
+										</div>
+									</div>
+								} 		
+							</div>
+						</div>
+					</div>	
+					
+					): ''
+				}
+				
+					</div>
+				</div>	
 				
 			</div>
 		);

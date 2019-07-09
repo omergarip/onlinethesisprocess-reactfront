@@ -52,6 +52,9 @@ input:focus{
 #formsignup {
     margin-top: 7.4rem;
 }
+#formsignin {
+    margin-top: 16.4rem;
+}
 .login_btn{
     color: black;
     background-color: #FFC312;

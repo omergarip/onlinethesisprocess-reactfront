@@ -95,7 +95,7 @@ class Researches extends Component {
         <div className="row">
             
             { researches.map((research, i) => (
-                <div className="card col-md-11 mx-auto" key={ i }>
+                <div className="card col-md-11 mx-auto my-3" key={ i }>
                 <h5 className="card-header">{ research.title }</h5>
                     <div className="card-body">
                         <p className="card-text">
@@ -118,19 +118,21 @@ class Researches extends Component {
                                     Ask Permission To Read
                             </button> : this.state.permissions.map((permission, i) =>(
                                permission.permissionFrom === isAuthenticated().user._id  ? (
-                                    permission.status === 'Accepted' ?
+                                    permission.status === 'Accepted'
+                                    && permission.permissionFor === research._id ?
                                       <Link 
                                             key={ i }
                                             to={`/research/${research._id}`}
                                             className="btn btn-raised btn-primary btn-sm float-right">
                                                 Read More
                                         </Link> 
-                                       : permission.status === 'Waiting for permission' ? 
+                                       : permission.status === 'Waiting for permission' 
+                                       && permission.permissionFor === research._id? 
                                         <div className="form-group float-right"  key={ i }> 
                                             <button 
                                                 id="waitingPermission"
                                                 className="form-control btn btn-raised btn-warning btn-sm disabled">
-                                                    Waiting for permission
+                                                    Waiting for permission 
                                             </button>
                                             <a 
                                                 name = { i }

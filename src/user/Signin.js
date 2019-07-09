@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import { signin, authenticate } from '../auth';
-import '../css/signin.css';
+import '../css/signup.css';
 
 class Signin extends Component {
     constructor() {
@@ -45,15 +45,38 @@ class Signin extends Component {
     
     
     signinForm = (username, password) => (
-        <form className="box">
-            <h1>Sign In</h1>
-            <input onChange={ this.handleChange("username") } type="text" style={{ color: "white" }} 
-                                        value={ username } placeholder="Username"/>
-            <input onChange={ this.handleChange("password") } type="password" 
-                                        value={ password } placeholder="Password"/>      
-            <input onClick = { this.clickSubmit } type="submit" value="Sign In"/>
-            
-        </form>
+        <form>
+        <div className="card signupCard" style={{width: "33.5rem", height: "16rem"}}>
+			<div className="card-header">
+				<h3>Sign In</h3>
+			</div>
+			<div className="card-body">
+			    <div className="row">
+    			    <div className="col-lg-12 mx-auto">
+    			        <div className="input-group form-group">
+                            <div className="input-group-prepend">
+                                <span className="input-group-text"><i className="fas fa-user"></i></span>
+                            </div>
+                            <input onChange={ this.handleChange("username") } type="text" className="form-control" 
+                                    value={ username } placeholder="Please enter your username."/>
+                        </div>
+                        <div className="input-group form-group">
+                            <div className="input-group-prepend">
+                              <span className="input-group-text"><i className="fas fa-key"></i></span>
+                            </div>
+                            <input onChange={ this.handleChange("password") } type="password" className="form-control" 
+                                    value={ password } placeholder="Please enter your password."/>
+                        </div>
+                        <div className="form-group">
+                            <button onClick = { this.clickSubmit } className="btn float-right btn-raised login_btn">
+                                Sign In
+                            </button>
+                        </div>
+                    </div>
+    			</div>
+    		</div>  
+		</div>
+		</form>
     )
     
     render() {
@@ -72,7 +95,9 @@ class Signin extends Component {
                             <h2>Loading...</h2>
                         </div>
                     ) : ( "")}
-                    { this.signinForm(username, password) }
+                    <div className="d-flex justify-content-center h-100" id="formsignin">
+                        { this.signinForm(username, password) }
+                    </div>
                 </div>
                 
             )
