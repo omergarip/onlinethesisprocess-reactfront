@@ -124,7 +124,7 @@ class Profile extends Component {
         if(redirectToSignin) return <Redirect to="/signin" />
         
         const photoUrl = user._id ? 
-            `http://localhost:3001/user/photo/${user._id}?
+            `${process.env.REACT_APP_API_URL}/user/photo/${user._id}?
             ${new Date().getTime()}`: 
             DefaultProfile
             
