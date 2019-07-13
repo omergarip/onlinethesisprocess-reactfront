@@ -64,24 +64,36 @@ const Menu = ({ history }) => (
                         href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   { `${isAuthenticated().user.fname}'s profile` }
                 </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <Link to={`/user/${isAuthenticated().user._id}`} 
-                            className="dropdown-item">
-                            My Profile
-                    </Link>
-                    <Link to={`/user/${isAuthenticated().user._id}/permission`} 
-                            className="dropdown-item">
-                            Permission Requests
-                    </Link>
-                    <Link to={`/user/${isAuthenticated().user._id}/request`} 
-                            className="dropdown-item">
-                            Requests
-                    </Link>
-                    <Link to={`/user/${isAuthenticated().user._id}/thesis-process`} 
-                            className="dropdown-item">
-                            Thesis Process
-                    </Link>
-                </div>
+               
+                    {
+                        isAuthenticated().user.userType === 'student' ?
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <Link to={`/user/${isAuthenticated().user._id}`} 
+                                    className="dropdown-item">
+                                    My Profile
+                            </Link>
+                            <Link to={`/user/${isAuthenticated().user._id}/thesis-process`} 
+                                    className="dropdown-item">
+                                    Thesis Process
+                            </Link> 
+                        </div> : 
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <Link to={`/user/${isAuthenticated().user._id}`} 
+                                    className="dropdown-item">
+                                    My Profile
+                            </Link>
+                            <Link to={`/user/${isAuthenticated().user._id}/permission`} 
+                                    className="dropdown-item">
+                                    Permission Requests
+                            </Link>
+                            <Link to={`/user/${isAuthenticated().user._id}/request`} 
+                                    className="dropdown-item">
+                                    Requests
+                            </Link>
+                        </div>
+                    }
+                    
+                
               </li>
                 
                 <li className="nav-item">

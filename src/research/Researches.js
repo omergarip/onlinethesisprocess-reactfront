@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Redirect } from "react-router-dom";
 import { list } from "./apiResearch";
 import { isAuthenticated } from "../auth";
 import { getPermissions, create, remove } from "../permission/apiPermission";
@@ -12,20 +13,24 @@ class Researches extends Component {
             researchId: "",
             researches: [],
             permissions: [],
-            deleted: false
+            deleted: false,
         };
     }
     
     componentDidMount() {
-        const userId = isAuthenticated().user._id
-        const token = isAuthenticated().token
-        getPermissions(userId).then(data => {
-            if(data.error) {
-                console.log(data.error)
-            } else {
-                this.setState({ permissions: data });
-            }
-        });
+        if (isAuthenticated())
+        {
+            const userId = isAuthenticated().user._id
+            getPermissions(userId).then(data => {
+                if(data.error) {
+                    console.log(data.error)
+                } else {
+                    this.setState({ permissions: data });
+                }
+            });
+        }
+            
+        
         list().then(data => {
             if(data.error) {
                 console.log(data.error)
@@ -40,15 +45,18 @@ class Researches extends Component {
         return this.state != nextState;
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
-        const userId = isAuthenticated().user._id
         if (this.state.permissions === prevState.permissions) {
-            getPermissions(userId).then(data => {
-                if(data.error) {
-                    console.log(data.error)
-                } else {
-                    this.setState({ permissions: data });
-                }
-            });
+            if (isAuthenticated())
+            {
+                const userId = isAuthenticated().user._id
+                getPermissions(userId).then(data => {
+                    if(data.error) {
+                        console.log(data.error)
+                    } else {
+                        this.setState({ permissions: data });
+                    }
+                });
+            }
         }
     }
 
@@ -107,9 +115,16 @@ class Researches extends Component {
                         <p className="">
                             <strong>Department: {research.createdBy.department } </strong>
                         </p>
-                        {  }
+                        { isAuthenticated().user._id === research.createdBy._id ?
+                            <Link 
+                                key={ i }
+                                to={`/research/${research._id}`}
+                                className="btn btn-raised btn-primary btn-sm float-right">
+                                    Read More 
+                            </Link>  : ''
+                        }
                         
-                        { this.state.permissions.length === 0 ? 
+                        { isAuthenticated().user.userType === 'student' && this.state.permissions.length === 0 ? 
                             <button
                                 id={ research._id }
                                 name= { research.createdBy._id }
@@ -117,7 +132,8 @@ class Researches extends Component {
                                 className="btn btn-raised btn-primary btn-sm float-right"> 
                                     Ask Permission To Read
                             </button> : this.state.permissions.map((permission, i) =>(
-                               permission.permissionFrom === isAuthenticated().user._id  ? (
+                               isAuthenticated().user.userType === 'student' ? (
+                                permission.permissionFrom === isAuthenticated().user._id  ? (
                                     permission.status === 'Accepted'
                                     && permission.permissionFor === research._id ?
                                       <Link 
@@ -141,7 +157,7 @@ class Researches extends Component {
                                                 className="">
                                                     Click here to cancel it
                                             </a> 
-                                        </div> : ''
+                                        </div> : '') :''
                                         
                                         
                                         
@@ -161,12 +177,15 @@ class Researches extends Component {
         </div>
     );
     render() {
-        const { researches } = this.state;
-        
+        const { researches, loggedIn } = this.state;
         return (
             <div className="container">
                 <h2 className="mt-5 mb-5">Recent Researches</h2>
-                <Link to={`/research/create`} className="btn btn-primary my-3 ml-5"><i className="fas fa-plus"></i> Create</Link>
+                { isAuthenticated() && isAuthenticated().user.userType !== 'student' ? 
+                    <Link to={`/research/create`} className="btn btn-primary my-3 ml-5"><i className="fas fa-plus"></i> Create</Link> :
+                    ''
+                }
+                
                 { this.renderPosts(researches) }
             </div>
             );

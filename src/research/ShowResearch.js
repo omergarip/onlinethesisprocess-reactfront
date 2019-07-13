@@ -107,14 +107,16 @@ class ShowResearch extends Component {
 					<br />
 					<br />
 
-					{studentProcess.length === 0 ? (
+					{ isAuthenticated().user.userType === 'student' && studentProcess.length === 0 ? (
 						<button onClick={this.clickSubmit} className="btn btn-info">
 							Select This Topic
 						</button>
 					) : (
 						studentProcess.map(
 							(data, i) =>
-								data.studentInfo._id === isAuthenticated().user._id && !data.topicStatus ? (
+								isAuthenticated().user.userType === 'student' && 
+								data.studentInfo._id === isAuthenticated().user._id && 
+								!data.topicStatus ? (
 									<button onClick={this.clickSubmit} className="btn btn-info">
 										Select This Topic
 									</button>

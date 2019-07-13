@@ -24,10 +24,11 @@ class RequestProfile extends Component {
             if(data.error) {
                 console.log(data.error)
             } else {
-                this.setState({ 
-                    requests: data,
-                    studentId: data[0].requestedFrom._id
-                });
+                    if (data.length !== 0)
+                        this.setState({ 
+                            requests: data,
+                            studentId: data[0].requestedFrom._id
+                        });
             }
         });
         console.log(this.state.requests)
@@ -48,7 +49,6 @@ class RequestProfile extends Component {
         const token = isAuthenticated().token
         const studentId = this.state.studentId
         if (this.state.requests === prevState.requests) {
-            
             getRequestsByUser(userId, token)
             .then(data => {
                 if(data.error) {
@@ -57,13 +57,16 @@ class RequestProfile extends Component {
                     this.setState({ requests: data});
                 }
             });
-            read(studentId, token).then(data => {
-    			if (data.error) {
-    				console.log(data.error);
-    			} else {
-    				this.setState({ studentProcess: data });
-    			}
-    		});
+            if (studentId !== '') {
+                read(studentId, token).then(data => {
+                    if (data.error) {
+                        console.log(data.error);
+                    } else {
+                        this.setState({ studentProcess: data });
+                    }
+                });
+            }
+                
         }
     }
     
