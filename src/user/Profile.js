@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { isAuthenticated } from '../auth';
 import { Redirect, Link } from "react-router-dom";
-import { getAdvisers, create, remove } from "../adviser/apiAdviser";
+import { getAdviserByStudentId, create, remove } from "../adviser/apiAdviser";
 import { read } from "./apiUser";
 import DefaultProfile from '../images/avatar.png';
 import Background from '../images/jones.jpg';
@@ -22,6 +22,7 @@ class Profile extends Component {
     }
     
     init = (userId) => {
+        
         const token = isAuthenticated().token
         read(userId, token)
         .then(data => {
@@ -31,19 +32,22 @@ class Profile extends Component {
                 this.setState({ user: data});
             }
         });
-        getAdvisers()
-        .then(data => {
-            if(data.error) {
-                console.log(data.error)
-            } else {
-                this.setState({ advisers: data});
-            }
-        });
+        
     }
     
     componentDidMount() {
         const userId = this.props.match.params.userId
+        const token = isAuthenticated().token
         this.init(userId);
+        const studentId = isAuthenticated().user._id
+        getAdviserByStudentId(studentId, token)
+        .then(data => {
+            if(data.error) {
+                console.log(data.error)
+            } else {
+                this.setState({ advisers: data });
+            }
+        });
         
     }
     
@@ -51,14 +55,15 @@ class Profile extends Component {
         return this.state != nextState;
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
-        const userId = isAuthenticated().user._id
+        const studentId = isAuthenticated().user._id
+        const token = isAuthenticated().token
         if (this.state.advisers === prevState.advisers) {
-            getAdvisers()
+            getAdviserByStudentId(studentId, token)
             .then(data => {
                 if(data.error) {
                     console.log(data.error)
                 } else {
-                    this.setState({ advisers: data});
+                    this.setState({ advisers: data });
                 }
             });
         }
@@ -100,7 +105,7 @@ class Profile extends Component {
             }
         });
     };
-    
+
     cancelRequest = event => {
         event.preventDefault();
         this.setState({ loading: true });
@@ -165,8 +170,8 @@ class Profile extends Component {
                                             <hr/>
                                         </div>
                                         { isAuthenticated().user && isAuthenticated().user.userType === 'student' &&
-                                            !(isAuthenticated().user._id === user._id) && ( 
-                                                advisers.length === 0 ? 
+                                          !(isAuthenticated().user._id === user._id) ? (
+                                                advisers.length === 0 ?
                                                     <div className="col-md-4 col-sm-6 col-xs-6 profile-header-section1 text-right pull-rigth">
                                                         <button 
                                                         data-toggle="modal" data-target="#exampleModal"     
@@ -175,76 +180,77 @@ class Profile extends Component {
                                                             Send Request
                                                         </button> 
                                                         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg" role="document">
-                                                            <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title" id="exampleModalLabel">New message</h5>
-                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                                </button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <form>
-                                                                <div class="form-group">
-                                                                    <label for="recipient-name" class="float-left col-form-label">Description*:</label>
-                                                                    <textarea 
-                                                                        onChange={this.handleChange("introduction")} 
-                                                                        rows="10" type="text" class="form-control" id="recipient-name" 
-                                                                        placeholder="Please briefly explain your research topic">
-                                                                        </textarea>
+                                                            <div class="modal-dialog modal-lg" role="document">
+                                                                <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                    </button>
                                                                 </div>
-                                                                <div class="form-group">
-                                                                    <label for="message-text" class="float-left col-form-label">Message:</label>
-                                                                    <textarea 
-                                                                        onChange={this.handleChange("message")} 
-                                                                        rows="5" class="form-control" id="message-text" 
-                                                                        placeholder="You can send message to the faculty member"></textarea>
+                                                                <div class="modal-body">
+                                                                    <form>
+                                                                    <div class="form-group">
+                                                                        <label for="recipient-name" class="float-left col-form-label">Description*:</label>
+                                                                        <textarea 
+                                                                            onChange={this.handleChange("introduction")} 
+                                                                            rows="10" type="text" class="form-control" id="recipient-name" 
+                                                                            placeholder="Please briefly explain your research topic">
+                                                                            </textarea>
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label for="message-text" class="float-left col-form-label">Message:</label>
+                                                                        <textarea 
+                                                                            onChange={this.handleChange("message")} 
+                                                                            rows="5" class="form-control" id="message-text" 
+                                                                            placeholder="You can send message to the faculty member"></textarea>
+                                                                    </div>
+                                                                    </form>
                                                                 </div>
-                                                                </form>
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                                <button onClick={this.sendRequest} type="button" data-dismiss="modal" class="btn btn-primary">Send Request</button>
-                                                            </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                                    <button onClick={this.sendRequest} type="button" data-dismiss="modal" class="btn btn-primary">Send Request</button>
+                                                                </div>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                        </div>
-                                                    </div> 
-                                                    
-                                                    :   
-                                                    advisers.map((adviser, i) => (
-                                                        adviser.requestedFrom === isAuthenticated().user._id &&
-                                                        adviser.requestedTo._id === this.props.match.params.userId ? (
-                                                            adviser.status === 'Accepted' ?    
-                                                                <div 
-                                                                    className="col-md-4 col-sm-6 col-xs-6 
-                                                                    profile-header-section1 text-right pull-rigth"
-                                                                >
-                                                                    <p className="text-primary">{ user.fname } { user.lname } is your adviser.</p> 
-                                                                </div> : adviser.status === 'Waiting for permission' ? 
-                                                                <div 
-                                                                    className="col-md-4 col-sm-6 col-xs-6 
-                                                                    profile-header-section1 text-right pull-rigth"
-                                                                >
-                                                                    <button 
-                                                                        onClick={this.clickSubmit}
-                                                                        className="btn btn-warning btn-block disabled"
-                                                                    > 
-                                                                        Waiting for permission
-                                                                    </button> 
-                                                                    <a 
-                                                                        id="cancelPermission"
-                                                                        onClick={this.cancelRequest}
-                                                                        name={ i }
-                                                                    >
-                                                                        Click here to cancel it
-                                                                    </a> 
-                                                                </div> : ''
-                                                        )  : 
-                                                        ''
-                                                    ))
+                                                    </div>
+                                                :  
+                                                advisers[0].requestedFrom === isAuthenticated().user._id &&
+                                                advisers[0].requestedTo._id === this.props.match.params.userId ? 
+                                                    advisers[0].status === 'Accepted' ?    
+                                                        <div 
+                                                            className="col-md-4 col-sm-6 col-xs-6 
+                                                            profile-header-section1 text-right pull-rigth"
+                                                        >
+                                                            <p className="text-primary">{ user.fname } { user.lname } is your adviser.</p> 
+                                                        </div> 
+                                                    : 
+                                                    advisers[0].status === 'Waiting for permission' ? 
+                                                        <div 
+                                                            className="col-md-4 col-sm-6 col-xs-6 
+                                                            profile-header-section1 text-right pull-rigth"
+                                                        >
+                                                            <button 
+                                                                onClick={this.clickSubmit}
+                                                                className="btn btn-warning btn-block disabled"
+                                                            > 
+                                                                Waiting for permission
+                                                            </button> 
+                                                            <a 
+                                                                id="cancelPermission"
+                                                                onClick={this.cancelRequest}
+                                                                name={ advisers[0] }
+                                                            >
+                                                                Click here to cancel it
+                                                            </a> 
+                                                        </div> 
+                                                    : '' 
+                                                : ''
+                                                   
                                                 
-                                        ) }
+                                            ) : ''
+                                         }
 
 
 

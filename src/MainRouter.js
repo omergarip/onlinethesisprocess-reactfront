@@ -18,6 +18,7 @@ import NewReview from './review/NewReview';
 import Researches from './research/Researches';
 import ShowResearch from './research/ShowResearch';
 import PrivateRoute from './auth/PrivateRoute';
+import Difference from './process/Difference';
 
 const MainRouter = () => (
     <div>
@@ -39,6 +40,7 @@ const MainRouter = () => (
             <PrivateRoute exact path="/user/:userId/permission" component={ PermissionProfile } />
             <PrivateRoute exact path="/user/:userId/thesis-process" component={ ProcessProfile } />
             <PrivateRoute exact path="/user/edit/:userId" component={ EditProfile } />
+            <PrivateRoute exact path="/revised" component={ Difference } />
         </Switch>
     </div>
 )

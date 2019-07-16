@@ -49,7 +49,7 @@ class NewForm extends Component {
     isValid = () => {
         const { proposedTitle, date, address } = this.state;
         if (proposedTitle.length === 0 || date.length === 0 || address.length === 0) {
-            this.setState({ error: "All fields are required", loading: false });
+            this.setState({ error: "All fields are required" });
             return false;
         }
         return true;
@@ -64,8 +64,6 @@ class NewForm extends Component {
 
     clickSubmit = event => {
         event.preventDefault();
-        this.setState({ loading: true });
-        
         if (this.isValid()) {
             const studentId = isAuthenticated().user._id;
             const token = isAuthenticated().token;
@@ -78,10 +76,7 @@ class NewForm extends Component {
                 if (data.error) {
                     this.setState({ error: data.error });
                 } else {
-                    this.setState({ 
-                        loading: false,
-                        redirectToProfile: true
-                    })    
+                    this.setState({ redirectToProfile: true })    
                 }
             });
             const userId = isAuthenticated().user._id;
@@ -95,24 +90,14 @@ class NewForm extends Component {
     		const data = {
     			studentInfo, topic, topicStatus, adviser, adviserStatus, formStatus
     		};
-    		console.log(data)
     		deleteProcess(userId, token, pId).then(data => {
     			if (data.error) {
     				this.setState({ error: data.error });
-    			} else {
-    				this.setState({
-    					loading: false
-    				});
     			}
     		});
     		createProcess(userId, token, data).then(data => {
     			if (data.error) {
     				this.setState({ error: data.error })
-    			}
-    			else {
-    				this.setState({
-    					loading: false
-    				});
     			}
     		})
         }
@@ -120,7 +105,8 @@ class NewForm extends Component {
 
     render() {
         const { redirectToProfile, advisers } = this.state
-        if(redirectToProfile) return <Redirect to={`/user/${isAuthenticated().user._id}/thesis-form`} />
+        if(redirectToProfile) 
+            return <Redirect to={`/user/${isAuthenticated().user._id}/thesis-process`} />
             
         return (
             <div class="container main-secction" >
