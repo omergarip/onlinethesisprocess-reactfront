@@ -1,0 +1,264 @@
+/* Big tablet to 1200px (width smaller that the 1140px row) */
+@media only screen and (max-width: 1280px) {
+    .text-box {
+        width: 100%;
+        padding: 0 2%;
+    }
+    
+    .row { padding: 0 2%; }	
+	
+	.heading-primary-main { 
+		font-size: 55px; 
+		letter-spacing: 14.3px
+	}
+	
+	.heading-primary-sub { 
+		font-size: 37px; 
+		letter-spacing: 11.8px
+	}	
+	.text-box { left: 55%; }
+}
+
+@media screen and (min-width: 1023.1px) and (max-width: 1168px) {
+    body { font-size: 18px; }
+    section { padding: 60px 0 }
+	.heading-primary-main { 
+		font-size: 50px; 
+		letter-spacing: 12.3px
+	}
+	
+	.heading-primary-sub { 
+		font-size: 34px; 
+		letter-spacing: 10px
+	}	
+	.text-box { left: 53%; }
+}
+
+/* Small tablet to big tablet: from 768 to 1023 px */
+@media only screen and (max-width: 1023px) {
+	.heading-primary-main { 
+		font-size: 45px; 
+		letter-spacing: 9.5px
+	}
+	
+	.heading-primary-sub { 
+		font-size: 31px; 
+		letter-spacing: 7.6px
+	}	
+	.text-box { left: 53%; }
+    
+}
+
+@media screen and (min-width: 786.1px) and (max-width: 880px) {
+	.heading-primary-main { 
+		font-size: 40px; 
+		letter-spacing: 7.9px
+	}
+	
+	.heading-primary-sub { 
+		font-size: 28px; 
+		letter-spacing: 6.1px
+	}	
+	.text-box { left: 53%; }
+}
+
+@media screen and (min-width: 625.1px) and (max-width: 786px) {
+	.text-box { left: 51%; 
+		text-align: center
+	}
+	.heading-primary-main { 
+		font-size: 25px; 
+		margin-bottom: 10px;
+	}
+	
+	.heading-primary-sub { 
+		font-size: 14.5px; 
+		letter-spacing: 8.8px
+	}	
+	
+	.logo, .logo-black {
+		width: 50%;
+	}
+	
+	 body { font-size: 16px; }
+    section { padding: 30px 0; }
+    .row, .text-box { padding: 0 4%; }
+
+    .mobile-nav-icon { display: inline-block; }
+    .main-nav { 
+        display: none;
+        float: left;
+        margin-top: 30px;
+        margin-left: 25px;
+    }
+    .main-nav li { display: block; }
+    
+    .main-nav li a:link, 
+    .main-nav li a:visited {
+        display: block;
+        border: 0;
+        padding: 10px 0;
+        font-size: 100%;
+    }
+    
+    .sticky .main-nav { margin-top: 10px; }
+    .sticky .main-nav li a:link,
+    .sticky .main-nav li a:visited { padding: 10px 0; }
+    .sticky .mobile-nav-icon { margin-top: 10px; }
+    .sticky .mobile-nav-icon i { color: #555; }
+    
+    h1 { font-size: 180%; }
+    h2 { font-size: 150%; }
+	
+	.competitions {
+		flex-direction: column;
+		height: 100%;
+	}
+	
+	.col-lg-6 {
+		margin-bottom: 35px;
+	}
+
+	.competitions__social {
+		flex: 0 0 40px;
+		writing-mode: horizontal-tb;
+	}
+	
+	.competitions__social i {
+		margin-right: -13px;
+		margin-top: 6px;
+		color: white;
+	}
+}
+
+@media screen and (min-width: 414.1px) and (max-width: 625px) {
+	.mobile-nav-icon { 
+		display: inline-block; 
+		margin-right: 12px;
+	}
+	.main-nav { 
+        display: none;
+        float: left;
+        margin-top: 30px;
+        margin-left: 25px;
+    }
+    .main-nav li { display: block; }
+    
+    .main-nav li a:link, 
+    .main-nav li a:visited {
+        display: block;
+        border: 0;
+        padding: 10px 0;
+        font-size: 100%;
+    }
+    
+    .sticky .main-nav { margin-top: 10px; }
+    .sticky .main-nav li a:link,
+    .sticky .main-nav li a:visited { padding: 10px 0; }
+    .sticky .mobile-nav-icon { margin-top: 10px; }
+    .sticky .mobile-nav-icon i { color: #555; }
+	.logo, .logo-black {
+		width: 40%;
+	}
+	.text-box { left: 51%; 
+		text-align: center
+	}
+	.heading-primary-main { 
+		font-size: 18.5px; 
+		letter-spacing: 5px;
+		margin-bottom: 10px;
+	}
+	
+	.heading-primary-sub { 
+		font-size: 13px; 
+		letter-spacing: 3.5px
+	}
+	
+	.competitions {
+		flex-direction: column;
+		height: 100%;
+	}
+	
+	.col-lg-6 {
+		margin-bottom: 35px;
+	}
+
+	.competitions__social {
+		flex: 0 0 40px;
+		writing-mode: horizontal-tb;
+	}
+	
+	.competitions__social i {
+		margin-right: -13px;
+		margin-top: 6px;
+		color: white;
+	}
+}
+
+@media screen and (min-width: 310.1px) and (max-width: 414px) {
+	.mobile-nav-icon { 
+		display: inline-block; 
+		margin-right: 12px;
+	}
+	.main-nav { 
+        display: none;
+        float: left;
+        margin-top: 30px;
+        margin-left: 25px;
+    }
+    .main-nav li { display: block; }
+    
+    .main-nav li a:link, 
+    .main-nav li a:visited {
+        display: block;
+        border: 0;
+        padding: 10px 0;
+        font-size: 100%;
+    }
+    
+    .sticky .main-nav { margin-top: 10px; }
+    .sticky .main-nav li a:link,
+    .sticky .main-nav li a:visited { padding: 10px 0; }
+    .sticky .mobile-nav-icon { margin-top: 10px; }
+    .sticky .mobile-nav-icon i { color: #555; }
+	.logo, .logo-black {
+		width: 40%;
+	}
+	.text-box { 
+		margin-top: 75px;
+		left: 51%; 
+		text-align: center
+	}
+	.heading-primary-main { 
+		font-size: 15.5px; 
+		letter-spacing: 3px;
+		margin-bottom: 10px;
+	}
+	
+	.heading-primary-sub { 
+		font-size: 11px; 
+		letter-spacing: 2px
+	}
+	
+	.competitions {
+		flex-direction: column;
+		height: 100%;
+	}
+	
+	.col-lg-6 {
+		margin-bottom: 35px;
+	}
+
+	.competitions__social {
+		flex: 0 0 40px;
+		writing-mode: horizontal-tb;
+	}
+	
+	.competitions__social i {
+		margin-right: -13px;
+		margin-top: 6px;
+		color: white;
+	}
+}
+
+

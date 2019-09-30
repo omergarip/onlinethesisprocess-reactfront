@@ -29,16 +29,16 @@ class RequestProfile extends Component {
                             requests: data,
                             studentId: data[0].requestedFrom._id
                         });
+                        read(data[0].requestedFrom._id, token).then(data => {
+                            if (data.error) {
+                                console.log(data.error);
+                            } else {
+                                this.setState({ studentProcess: data });
+                            }
+                        });
             }
         });
-        console.log(this.state.requests)
-        read(userId, token).then(data => {
-			if (data.error) {
-				console.log(data.error);
-			} else {
-				this.setState({ studentProcess: data });
-			}
-		});
+       
     }
     
     shouldComponentUpdate(nextProps, nextState) {

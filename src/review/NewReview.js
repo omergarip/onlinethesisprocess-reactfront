@@ -5,20 +5,24 @@ import { getAdviserByStudentId } from '../adviser/apiAdviser';
 import NewResearch from '../research/NewResearch';
 import { Redirect } from 'react-router-dom';
 import '../css/main.css';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 class NewReview extends Component {
 	constructor() {
 		super();
 		this.state = {
-			title: '',
-			body: '',
+			introTitle: '',
+			introBody: '',
 			reference: '',
 			references: [],
 			reviewId: '',
+			review: '',
 			error: '',
 			adviserId: '',
 			loading: false,
-			redirectToReview: false
+			redirectToReview: false,
+			isDifferent: false,
+			focus: false
 		};
 	}
 
@@ -38,30 +42,78 @@ class NewReview extends Component {
 				console.log(data.error);
 			} else {
 				this.setState({
+					review: data,
 					reviewId: data[0]._id,
-					title: data[0].title,
-					body: data[0].body,
+					introTitle: data[0].introTitle,
+					introBody: data[0].introBody,
 					references: data[0].references
 				});
+				if(data[0].introBody !== "" && data[0].introTitle !== "")
+					this.setState({ isDifferent: false });
 			}
 		});
+		ClassicEditor
+			.create( document.querySelector( '#introBody' ) )
+			.then( editor => {
+				window.editor = editor;
+			} )
+			.catch( err => {
+				console.error( err.stack );
+			} );
 	}
 
-	isValid = () => {
-		const { title, body } = this.state;
-		if (title.length === 0 || body.length === 0) {
-			this.setState({ error: 'All fields are required', loading: false });
-			return false;
-		}
-		return true;
-	};
+	// isValid = () => {
+	// 	const { title, body } = this.state;
+	// 	if (title.length === 0 || body.length === 0) {
+	// 		this.setState({ error: 'All fields are required', loading: false });
+	// 		return false;
+	// 	}
+	// 	return true;
+	// };
 
 	handleChange = name => event => {
 		this.setState({ error: '' });
 		this.setState({
 			[name]: event.target.value
-		});
+		});			
 	};
+
+	_onBlur() {
+        setTimeout(() => {
+            if (this.state.focus) {
+                this.setState({
+                    focus: false,
+                });
+            }
+        }, 0);
+    }
+
+	_onFocus() {
+		if (!this.state.focus) {
+            this.setState({
+                focus: true,
+			});
+			const introBody = this.state.introBody;
+			const reviewBody = this.state.review[0].introBody;
+			console.log(reviewBody === introBody)
+			if((reviewBody === undefined && introBody !== "") && reviewBody != introBody) {
+				this.setState({ isDifferent: true });
+				console.log('1')
+			}	
+			if(!reviewBody === undefined && reviewBody !== introBody) {
+				this.setState({ isDifferent: true });
+				console.log('2')
+			}
+				
+			if (!reviewBody === undefined && reviewBody === introBody) {
+				this.setState({ isDifferent: false })
+				console.log('3')
+			}
+			if (introBody === "")
+				this.setState({ isDifferent: false })
+		}
+		
+    }
 
 	addCitation = event => {
 		if (event.key === 'Enter') {
@@ -84,15 +136,15 @@ class NewReview extends Component {
 		event.preventDefault();
 		this.setState({ loading: true });
 
-		if (this.isValid()) {
+		// if (this.isValid()) {
 			const userId = isAuthenticated().user._id;
 			const token = isAuthenticated().token;
 			const reviewId = this.state.reviewId;
-			const { title, body, adviserId, references } = this.state;
+			const { introTitle, introBody, adviserId, references } = this.state;
 			const review = {
 				adviserId,
-				title,
-				body,
+				introTitle,
+				introBody,
 				references
 			};
 			update(userId, token, reviewId, review).then(data => {
@@ -105,29 +157,31 @@ class NewReview extends Component {
 					});
 				}
 			});
-		}
+		// }
 	};
 
-	newResearchForm = (title, body) => (
+	newResearchForm = (introTitle, introBody) => (
 		<form>
 			<div className="form-group">
 				<label className="text-muted">Title</label>
 				<input
-					onChange={this.handleChange('title')}
+					onChange={this.handleChange('introTitle')}
 					type="text"
 					className="form-control"
-					value={title}
+					value={introTitle}
 				/>
 			</div>
 			<div className="form-group">
-				<label className="text-muted">Whole Description</label>
+				<label className="text-muted">Body</label>
 				<textarea
 					rows="15"
-					onChange={this.handleChange('body')}
+					onChange={this.handleChange('introBody')}
 					type="text"
 					className="form-control"
-					value={body}
+					value={introBody}
 				/>
+				
+				
 			</div>
 			<ul class="list">
 				{this.state.references.map((reference, i) => (
@@ -148,14 +202,19 @@ class NewReview extends Component {
 					placeholder="Please write references here and press enter!"
 				/>
 			</section>
-			<button onClick={this.clickSubmit} className="btn btn-raised btn-primary">
-				Save
-			</button>
+			{
+				this.state.isDifferent ? 
+					<button onClick={this.clickSubmit} className="btn btn-raised btn-primary">
+						Save
+					</button>
+				: ''
+			}
+			
 		</form>
 	);
 
 	render() {
-		const { title, body, redirectToReview, error, loading } = this.state;
+		const { introTitle, introBody, redirectToReview, error, loading } = this.state;
 
 		if (redirectToReview) {
 			return <Redirect to={`/user/${isAuthenticated().user._id}/thesis-process`} />;
@@ -163,7 +222,7 @@ class NewReview extends Component {
 
 		return (
 			<div className="container">
-				<h2 className="mt-5 mb-5">Literature Review</h2>
+				<h2 className="mt-5 mb-5">Introduction</h2>
 				<div className="alert alert-danger" style={{ display: error ? '' : 'none' }}>
 					{error}
 				</div>
@@ -176,8 +235,9 @@ class NewReview extends Component {
 					''
 				)}
 
-				{this.newResearchForm(title, body)}
+				{this.newResearchForm(introTitle, introBody)}
 			</div>
+			
 		);
 	}
 }

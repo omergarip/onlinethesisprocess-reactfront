@@ -2,6 +2,7 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import Home from './core/Home';
 import Menu from './core/Menu';
+import Footer from './core/Footer';
 import Signup from './user/Signup';
 import FacultySignup from './user/FacultySignup';
 import StudentSignup from './user/StudentSignup';
@@ -18,7 +19,6 @@ import NewReview from './review/NewReview';
 import Researches from './research/Researches';
 import ShowResearch from './research/ShowResearch';
 import PrivateRoute from './auth/PrivateRoute';
-import Difference from './process/Difference';
 
 const MainRouter = () => (
     <div>
@@ -40,8 +40,8 @@ const MainRouter = () => (
             <PrivateRoute exact path="/user/:userId/permission" component={ PermissionProfile } />
             <PrivateRoute exact path="/user/:userId/thesis-process" component={ ProcessProfile } />
             <PrivateRoute exact path="/user/edit/:userId" component={ EditProfile } />
-            <PrivateRoute exact path="/revised" component={ Difference } />
         </Switch>
+        <Footer/>
     </div>
 )
 

@@ -14,13 +14,13 @@ html,body{
 #card{
     max-width: 35rem;
     max-height: 15rem;
-    margin: 10px auto;
+    margin: 1rem auto;
 }
 .logo {
     display: block;
     width: auto;
     margin: auto;
-    max-height: 100px;
+    max-height: 10rem;
     margin-top: 9rem;
     margin-bottom: 3rem;
 }
@@ -39,7 +39,7 @@ html,body{
     color: white;
 }
 .input-group-prepend span{
-    width: 50px;
+    width: 5rem;
     background-color: #FFC312;
     color: black;
     border:0 !important;
@@ -58,7 +58,7 @@ input:focus{
 .login_btn{
     color: black;
     background-color: #FFC312;
-    width: 100px;
+    width: 10rem;
 }
 .login_btn:hover{
     color: black;
@@ -68,5 +68,5 @@ input:focus{
     color: white;
 }
 .links a{
-    margin-left: 4px;
+    margin-left: 0.4rem;
 }

@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { isAuthenticated } from '../auth';
 import { Redirect, Link } from 'react-router-dom';
-import { getAdvisers, accept, remove } from '../adviser/apiAdviser';
-import { create } from '../review/apiReview';
-import { createProcess, read } from '../studentProcess/apiStudentProcess';
+import { create, getReviewByUser } from '../review/apiReview';
+import { read, createProcess, deleteProcess } from '../studentProcess/apiStudentProcess';
 import '../css/profile.css';
 import '../css/process.css';
 
@@ -18,7 +17,11 @@ class ProcessProfile extends Component {
 			topicStatus: false,
 			adviserStatus: false,
 			formStatus: false,
-			reviewStatus: false
+			introStatus: false,
+			literatureStatus: false,
+			methodologyStatus: false,
+			reviewId: '',
+			review: ''
 		};
 	}
 
@@ -37,10 +40,25 @@ class ProcessProfile extends Component {
 						topicStatus: data[0].topicStatus,
 						adviserStatus: data[0].adviserStatus,
 						formStatus: data[0].formStatus,
-						reviewStatus: data[0].reviewStatus
 					});
 				}
 					
+			}
+		});
+		getReviewByUser(userId, token).then(data => {
+			if (data.error) {
+				console.log(data.error);
+			} else {
+				if (data.length !== 0) {
+					this.setState({	
+						review: data,
+						reviewId: data[0]._id 
+					});
+					if (data[0].introBody !== "")
+						this.setState({ introStatus: true })
+				}
+					
+				
 			}
 		});
 	}
@@ -64,7 +82,6 @@ class ProcessProfile extends Component {
 							topicStatus: data[0].topicStatus,
 							adviserStatus: data[0].adviserStatus,
 							formStatus: data[0].formStatus,
-							reviewStatus: data[0].reviewStatus
 						});
 				}
 			});
@@ -81,17 +98,47 @@ class ProcessProfile extends Component {
 		const studentId = isAuthenticated().user._id;
 		const token = isAuthenticated().token;
 		const review = { studentId };
-		create(studentId, token, review).then(data => {
-			if (data.error) {
-				this.setState({ error: data.error });
-			} else {
-				this.setState({
-					loading: false,
-					redirectToReview: true
-				});
-			}
-		});
-	};
+		if (this.state.review.length === 0) {
+			create(studentId, token, review).then(data => {
+				if (data.error) {
+					this.setState({ error: data.error });
+				} else {
+					this.setState({
+						loading: false,
+						redirectToReview: true
+					});
+				}
+			});
+		} else {
+			this.setState({ redirectToReview: true 	})
+		}
+		
+		// const userId = isAuthenticated().user._id;
+		// const pId = this.state.studentProcess[0]._id;
+		// const topic = this.state.studentProcess[0].topic._id;
+		// const topicStatus = true;
+		// const studentInfo = userId;
+		// const adviser = this.state.studentProcess[0].adviser._id;	
+		// const adviserStatus = true;
+		// const formStatus = true;
+		// const reviewId = this.state.reviewId;
+		// const introStatus = true;
+		// const data = {
+		// 	studentInfo, topic, topicStatus,
+		// 	adviser, adviserStatus, formStatus,
+		// 	reviewId, introStatus
+		// };
+		// deleteProcess(userId, token, pId).then(data => {
+		// 	if (data.error) {
+		// 		this.setState({ error: data.error });
+		// 	}
+		// });
+		// createProcess(userId, token, data).then(data => {
+		// 	if (data.error) {
+		// 		this.setState({ error: data.error })
+		// 	}
+		// })
+};
 
 	newStudentProcess = event => {
 		event.preventDefault();
@@ -113,7 +160,7 @@ class ProcessProfile extends Component {
 	};
 
 	render() {
-		const { redirectToReview, studentProcess, topicStatus, adviserStatus, formStatus, reviewStatus, newProcess } = this.state;
+		const { redirectToReview, studentProcess, topicStatus, adviserStatus, formStatus, introStatus, newProcess } = this.state;
 
 		if (redirectToReview)
 			return <Redirect to={`/user/${isAuthenticated().user._id}/new-review`} />;
@@ -137,55 +184,55 @@ class ProcessProfile extends Component {
 								</button>
 							</div>
 						</div>
-					) :  ''	
-				}
-				<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-					<div class="panel panel-default">
-						
-						
-						<div class="panel-heading" role="tab" id="headingOne">
-							<h4 class="panel-title">
-								<a className={ topicStatus ? "collapsed status" : "collapsed"} role="button" data-toggle="collapse" 
-									data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-									Select Research Topic { topicStatus ? <span class="checkmark">&#10003;</span> : ''}
-								</a>
-							</h4>
-						</div>
-						<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-							<div class="panel-body">
-								{
-									!topicStatus ? (
-										<div>
-											<p className="lead process-text text-center">
-												The first thing is to select research topic. 
-											</p> 
-											<p className="lead process-text text-center">
-												Click button to find research topics.
-											</p> 
-											<div className="d-flex justify-content-center">
-												<Link
-													to={`/researches`}	>
-														Find Research Topic
-												</Link>
-											</div>
-										</div> )
-										: (
-										<div>
-											<p className="lead process-text text-center">
-												You have selected the researc topic.
-											</p>
-											<div className="d-flex justify-content-center">
-												<Link
-													to={`/research/${studentProcess[0].topic._id}`}	>
-														{ studentProcess[0].topic.title }
-												</Link>
-											</div>
-										</div>
-										)			
-								}
+					) : 
+
+					!newProcess ? (
+					<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+						<div class="panel panel-default">
+							
+							
+							<div class="panel-heading" role="tab" id="headingOne">
+								<h4 class="panel-title">
+									<a className={ topicStatus ? "collapsed status" : "collapsed"} role="button" data-toggle="collapse" 
+										data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+										Select Research Topic { topicStatus ? <span class="checkmark">&#10003;</span> : ''}
+									</a>
+								</h4>
 							</div>
-						</div>
-						
+							<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+								<div class="panel-body">
+									{
+										!topicStatus ? (
+											<div>
+												<p className="lead process-text text-center">
+													The first thing is to select research topic. 
+												</p> 
+												<p className="lead process-text text-center">
+													Click button to find research topics.
+												</p> 
+												<div className="d-flex justify-content-center">
+													<Link
+														to={`/researches`}	>
+															Find Research Topic
+													</Link>
+												</div>
+											</div> )
+											: (
+											<div>
+												<p className="lead process-text text-center">
+													You have selected the researc topic.
+												</p>
+												<div className="d-flex justify-content-center">
+													<Link
+														to={`/research/${studentProcess[0].topic._id}`}	>
+															{ studentProcess[0].topic.title }
+													</Link>
+												</div>
+											</div>
+											)			
+									}
+								</div>
+							</div>
 				{   topicStatus ? (	
 						<div>	
 							<div class="panel-heading mt-4" role="tab" id="headingOne">
@@ -285,16 +332,16 @@ class ProcessProfile extends Component {
 					<div>	
 						<div class="panel-heading mt-4" role="tab" id="headingOne">
 							<h4 class="panel-title">
-								<a className={reviewStatus ? "collapsed status" : "collapsed"} role="button" data-toggle="collapse" 
+								<a className={introStatus ? "collapsed status" : "collapsed"} role="button" data-toggle="collapse" 
 								data-parent="#accordion" href="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
-									Introduction { reviewStatus ? <span class="checkmark">&#10003;</span> : ''}
+									Introduction { introStatus ? <span class="checkmark">&#10003;</span> : ''}
 								</a>
 							</h4>
 						</div>
 						<div id="collapseFour" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
 							<div class="panel-body">
 								{
-									!reviewStatus ? 
+									!introStatus ? 
 									<div>
 										<p className="lead process-text text-center">
 											Now, You need to write the Introduction of the Problem.
@@ -312,13 +359,13 @@ class ProcessProfile extends Component {
 									</div> : 
 									<div>
 										<p className="lead process-text text-center">
-											You have filled out 'Supervisor Appointment Form' .
+											
 										</p>
 										<div className="d-flex justify-content-center">
 											<Link
-												to={`/user/${isAuthenticated().user._id}/thesis-form`}
+												to={`/user/${isAuthenticated().user._id}/new-review`}
 											>
-												View Form
+												Edit Introduction
 											</Link>
 										</div>
 									</div>
@@ -332,8 +379,10 @@ class ProcessProfile extends Component {
 				
 					</div>
 				</div>	
-				
+				) : ''
+				}	
 			</div>
+			
 		);
 	}
 }
