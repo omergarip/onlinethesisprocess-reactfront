@@ -35,6 +35,10 @@ body {
 /* REUSABLE COMPONENTS */
 /* -------------------------------------- */
 
+.loading__screen {
+    margin-top: 10rem;
+}
+
 .col-lg-6 {
 	display: flex;
 	justify-content: center;
@@ -168,7 +172,7 @@ h3 {
     -webkit-transition: background-color 0.2s, border 0.2, color 0.2s;
     transition: background-color 0.2s, border 0.2, color 0.2s;
     cursor: pointer;
-    font-size: 2.5rem;
+    font-size: 1.75rem;
 }
 
 .mainbtn-full:link,
@@ -361,6 +365,14 @@ header {
 	margin-left: 8rem;
 }
 
+.secondary-logo-black {
+    height: 5rem;
+    width: auto;
+    float: left;
+    margin-top: 0.9rem;
+	margin-left: 8rem;
+}
+
 /* MAIN NAV */
  
 .main-nav {
@@ -420,7 +432,7 @@ header {
     background-color: rgba(2, 0, 0, 0.98);
     box-shadow: 0 0.2rem 0.2rem #efefef;
     z-index: 9999;
-    padding-bottom: 0.4rem
+    padding-bottom: 0.4rem;
 }
 
 .sticky .main-nav { margin-top: 2rem; }
@@ -431,12 +443,25 @@ header {
     color: #fff;
 }
 
-.sticky .logo { display: none; }
-.sticky .logo-black { 
-    display: block; 
-    margin-left: 4.5rem; 
-    margin-right: auto;
+.secondary_sticky {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(2, 0, 0, 0.98);
+    box-shadow: 0 0.2rem 0.2rem #efefef;
+    z-index: 9999;
+    padding-bottom: 0.4rem;
 }
+
+.secondary_sticky .main-nav { margin-top: 2rem; }
+
+.secondary_sticky .main-nav li a:link,
+.secondary_sticky .main-nav li a:visited {
+    padding: 1.6rem 0;
+    color: #fff;
+}
+
 
 /* -------------------------------------- */
 /* RESEARCH TOPICS */
@@ -448,10 +473,18 @@ header {
     margin-top: auto;
 }
 
+.section__researches .card { margin-bottom: 5rem; }
+.section__researches h2 { margin-top: 5rem; }
 
 .section__researches .card-header {
     font-size: 2rem;
     text-align: center;
+}
+
+.section__researches .btn {
+    font-size: 1.7rem;
+    border-radius: 10rem;
+    padding: 0.5rem 1.5rem;
 }
 
 .section__researches .card-body {
@@ -469,7 +502,7 @@ header {
     height: 3rem;
 }
 
-.researcher__info a {
+.researcher__info-btn {
     margin-left: 1rem;
     font-size: 2.0rem;
 }
@@ -527,8 +560,8 @@ header {
     font-size: 500%;
     display: block;
     position: absolute;
-    top: 19rem;
-    right: 23rem;
+    top: 20rem;
+    right: 20rem;
 }
 
 cite {
@@ -544,6 +577,26 @@ cite img {
     vertical-align: middle
 }
 
+/* -------------------------------------- */
+/* INTRODUCTION */
+/* -------------------------------------- */
+
+#thesis {
+    font-size: 2rem;
+}
+
+#thesis input {
+    font-size: 2rem;
+}
+
+#thesis button { 
+    font-size: 2rem;
+    margin-bottom: 2rem;
+} 
+
+#thesis form {
+    margin: 8.55rem auto;
+}
 
 /* -------------------------------------- */
 /* FOOTER */
@@ -645,6 +698,95 @@ footer div:last-child {
     margin-bottom: 0;
 }
 
+/* -------------------------------------- */
+/* STUDENT PROCESS PAGE */
+/* -------------------------------------- */
+
+.section__process .col-md-8 {
+    display: flex;
+    align-items: center;
+}
+
+.section__process .display-6 { 
+    font-size: 3rem;
+    color: #000;
+    font-weight: 700;
+}
+
+.section__process .lead {
+    font-size: 1.7rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+.section__process .new-process {
+    font-size: 2rem;
+    padding: 0.5rem 2rem;
+    border-radius: 50px;
+}
+
+.workflow img {
+    object-fit: cover;
+    width: 100%;
+    height: 100vh;
+    margin-top: 5rem;
+}
+
+.panel-body .process-text {
+    font-size: 2rem;
+}
+
+#process__btn {
+    color: #fff;
+    font-size: 1.5rem;
+    border-radius: 10rem;
+    padding: 0.5rem 1.2rem;
+}
+
+.process__btn-center {
+    display: flex;
+    justify-content: center;
+}
+
+#process__link { 
+    font-size: 1.5rem;
+    border-radius: 10rem;
+    padding: 0.5rem 1.2rem;
+}
+
+
+/* -------------------------------------- */
+/* RESEARCH PAGE */
+/* -------------------------------------- */
+
+/* -------------------------------------- */
+/* FORM PAGE */
+/* -------------------------------------- */
+
+.section__form {
+    font-size: 1.75rem;
+}
+
+.section__form input {
+    font-size: 1.75rem;
+}
+
+.section__form .btn-purple {
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 1.2rem 3rem;
+    text-transform: uppercase;
+    border-radius: 10rem;
+    color: #fff; 
+    background: #7e62fd;
+}
+
+.section__form .form__btn {
+    width: 95%;
+    display: flex;
+    justify-content: flex-end;
+}
 
 /* -------------------------------------- */
 /* ANIMATIONS */

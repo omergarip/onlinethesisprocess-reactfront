@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
+import 'flatpickr/dist/themes/material_green.css'
+import Flatpickr from 'react-flatpickr'
 import { isAuthenticated } from '../auth';
-import { Redirect, Link } from "react-router-dom";
-import { getAdviserByStudentId } from "../adviser/apiAdviser";
-import { read, createProcess, deleteProcess } from '../studentProcess/apiStudentProcess';
-import { create } from "./apiForm";
+import { getProcess, updateForm } from '../process/apiProcess';
+import { create, getForm } from "./apiForm";
 import '../css/profile.css';
 import Logo from '../images/ylogo.png'
 
@@ -11,37 +11,38 @@ class NewForm extends Component {
     constructor() {
         super()
         this.state = {
+            formId: '',
+            pId: '',
             adviserId: '',
-            advisers: "",
+            adviserName: "",
             address: "",
             proposedTitle: "",
             city: '',
             zipcode: '',
             state: '',
             date: "",
-            studentProcess: [],
+            updateFId: false,
             redirectToProfile: false
         }
     }
     
     componentDidMount() {
-        const userId = isAuthenticated().user._id
-        const token = isAuthenticated().token
-        getAdviserByStudentId(userId, token).then(data => {
-            if(data.error) {
-                console.log(data.error)
-            } else {
-                this.setState({ 
-                    advisers: data[0].requestedTo,
-                    adviserId: data[0].requestedTo._id
-                });
-            }
-        });
-        read(userId, token).then(data => {
+        const pId = this.props.match.params.pId;
+		const token = isAuthenticated().token;
+		getProcess(pId, token).then(data => {
 			if (data.error) {
 				console.log(data.error);
 			} else {
-				this.setState({ studentProcess: data });
+				if (data.length === 0)
+					console.log(data.error)
+				else {
+					this.setState({ 
+                        pId : data[0]._id,
+                        adviserId: data[0].adviserId._id,
+                        adviserName : `${data[0].adviserId.fname} ${data[0].adviserId.lname}`,
+						loading: false
+					});
+				}	
 			}
 		});
     }
@@ -67,151 +68,154 @@ class NewForm extends Component {
         if (this.isValid()) {
             const studentId = isAuthenticated().user._id;
             const token = isAuthenticated().token;
-            const adviserId = this.state.advisers._id
-            const { proposedTitle, address, date, zipcode, city, state } = this.state;
+            const { pId, adviserId, proposedTitle, address, date, zipcode, city, state } = this.state
             const form = {
-                studentId, adviserId, address, proposedTitle, date, zipcode, city, state
-            };
-            create(studentId, token, form).then(data => {
+                studentId, adviserId, address, proposedTitle, date, zipcode, city, state 
+            }
+            create(pId, token, form).then(data => {
                 if (data.error) {
                     this.setState({ error: data.error });
                 } else {
-                    this.setState({ redirectToProfile: true })    
+                    getForm(studentId, token).then(data => {
+                        if (data.error) {
+                            this.setState({ error: data.error });
+                        } else {
+                            const formId = data[0]._id
+                            updateForm(pId, formId, token).then(data => {
+                                if (data.error) {
+                                    this.setState({ error: data.error });
+                                } else {
+                                    this.setState({
+                                        loading: false,
+                                        redirectToProfile:  true
+                                    });
+                                }
+                            });
+                        }
+                    }); 
                 }
             });
-            const userId = isAuthenticated().user._id;
-    		const pId = this.state.studentProcess[0]._id;
-    		const topic = this.state.studentProcess[0].topic._id;
-    		const topicStatus = true;
-    		const studentInfo = userId;
-			const adviser = this.state.adviserId;
-    		const adviserStatus = true;
-    		const formStatus = true;
-    		const data = {
-    			studentInfo, topic, topicStatus, adviser, adviserStatus, formStatus
-    		};
-    		deleteProcess(userId, token, pId).then(data => {
-    			if (data.error) {
-    				this.setState({ error: data.error });
-    			}
-    		});
-    		createProcess(userId, token, data).then(data => {
-    			if (data.error) {
-    				this.setState({ error: data.error })
-    			}
-    		})
         }
     };
 
+    redirectToTarget = (pId) => {
+		this.props.history.push(`/thesis-process/${pId}`)
+	}
+
     render() {
-        const { redirectToProfile, advisers } = this.state
-        if(redirectToProfile) 
-            return <Redirect to={`/user/${isAuthenticated().user._id}/thesis-process`} />
+        const { redirectToProfile, pId, adviserName } = this.state
+        if(redirectToProfile)
+            this.redirectToTarget(pId)
+
+            
             
         return (
-            <div class="container main-secction" >
-                <div className="d-flex flex-row justify-content-center">
-                    <img
-                        style={{ height: "200px", width: "auto" }}
-                        className="img-fluid" src={ Logo } /> 
-                </div>
-                <h3 className="text-center"><strong>SUPERVISOR APPOINTMENT FORM</strong></h3>
-                <form>
-                    <div className="row">
-                        <div className="col-md-3">
-                            <div className="form-group">
-                                <label className="text-muted">Banner ID</label>
-                                <input
-                                    value= { isAuthenticated().user.bannerId }
-                                    type="text"
-                                    className="form-control"
-                                    disabled
-                                />
-                            </div>
-                        </div>
-                        <div className=" col-md-5 ">
-                            <div className="form-group">
-                                <label className="text-muted">Student Name</label>
-                                <input
-                                    value = { `${isAuthenticated().user.fname} ${isAuthenticated().user.lname}`}
-                                    type="text"
-                                    className="form-control"
-                                    disabled
-                                />
-                            </div>
-                        </div>
-                        <div className=" col-md-4 ">
-                            <div className="form-group">
-                                <label className="text-muted">Adviser Name</label>
-                                <input
-                                    value = { `${advisers.fname} ${advisers.lname}` }
-                                    type="text"
-                                    className="form-control"
-                                    disabled
-                                />
-                            </div>
-                        </div>
-                        <div className="form-group col-md-12">
-                            <label className="text-muted">Address</label>
-                            <input
-                                onChange={this.handleChange("address")}   
-                                type="text"
-                                className="form-control"
-                            />
-                        </div>
-                        <div className="form-group col-md-6">
-                            <label className="text-muted">City</label>
-                            <input
-                                onChange={this.handleChange("city")}   
-                                type="text"
-                                className="form-control"
-                            />
-                        </div>
-                        <div className="form-group col-md-3">
-                            <label className="text-muted">State</label>
-                            <input
-                                onChange={this.handleChange("state")}   
-                                type="text"
-                                className="form-control"
-                            />
-                        </div>
-                        <div className="form-group col-md-3">
-                            <label className="text-muted">Zip Code</label>
-                            <input
-                                onChange={this.handleChange("zipcode")}   
-                                type="text"
-                                className="form-control"
-                            />
-                        </div>
-                        <div className="form-group col-md-8">
-                            <label className="text-muted">Proposed title of thesis/dissertation/portfolio</label>
-                            <input
-                                onChange={this.handleChange("proposedTitle")}    
-                                type="text"
-                                className="form-control"
-                            />
-                        </div>
-                        <div className="col-md-4">
-                            <div className="form-group">
-                                <label className="text-muted">Anticipated Completion Date</label>
-                                <input
-                                    onChange={this.handleChange("date")} 
-                                    type="text"
-                                    className="form-control"
-                                />
-                            </div>
-                        </div>
-                        <button
-                            onClick={this.clickSubmit}
-                            className="mb-3 ml-3 btn btn-raised btn-primary"
-                        >
-                            Submit Form
-                        </button>
+            <section className="section__form">
+                <div class="container main-secction" >
+                    <div className="d-flex flex-row justify-content-center">
+                        <img
+                            style={{ height: "200px", width: "auto" }}
+                            className="img-fluid" src={ Logo } /> 
                     </div>
-                </form> 
-                 
-                
-            </div>
+                    <h3 className="text-center"><strong>SUPERVISOR APPOINTMENT FORM</strong></h3>
+                    <form>
+                        <div className="row">
+                            <div className="col-md-3">
+                                <div className="form-group">
+                                    <label className="text-muted">Banner ID</label>
+                                    <input
+                                        value= { isAuthenticated().user.bannerId }
+                                        type="text"
+                                        className="form-control"
+                                        disabled
+                                    />
+                                </div>
+                            </div>
+                            <div className=" col-md-5 ">
+                                <div className="form-group">
+                                    <label className="text-muted">Student Name</label>
+                                    <input
+                                        value = { `${isAuthenticated().user.fname} ${isAuthenticated().user.lname}`}
+                                        type="text"
+                                        className="form-control"
+                                        disabled
+                                    />
+                                </div>
+                            </div>
+                            <div className=" col-md-4 ">
+                                <div className="form-group">
+                                    <label className="text-muted">Adviser Name</label>
+                                    <input
+                                        value = { adviserName }
+                                        type="text"
+                                        className="form-control"
+                                        disabled
+                                    />
+                                </div>
+                            </div>
+                            <div className="form-group col-md-12">
+                                <label className="text-muted">Address</label>
+                                <input
+                                    onChange={this.handleChange("address")}   
+                                    type="text"
+                                    className="form-control"
+                                />
+                            </div>
+                            <div className="form-group col-md-6">
+                                <label className="text-muted">City</label>
+                                <input
+                                    onChange={this.handleChange("city")}   
+                                    type="text"
+                                    className="form-control"
+                                />
+                            </div>
+                            <div className="form-group col-md-3">
+                                <label className="text-muted">State</label>
+                                <input
+                                    onChange={this.handleChange("state")}   
+                                    type="text"
+                                    className="form-control"
+                                />
+                            </div>
+                            <div className="form-group col-md-3">
+                                <label className="text-muted">Zip Code</label>
+                                <input
+                                    onChange={this.handleChange("zipcode")}   
+                                    type="text"
+                                    className="form-control"
+                                />
+                            </div>
+                            <div className="form-group col-md-8">
+                                <label className="text-muted">Proposed title of thesis/dissertation/portfolio</label>
+                                <input
+                                    onChange={this.handleChange("proposedTitle")}    
+                                    type="text"
+                                    className="form-control"
+                                />
+                            </div>
+                            <div className="col-md-4">
+                                <div className="form-group">
+                                    <label className="text-muted">Anticipated Completion Date</label>
+                                    <Flatpickr data-enable-time
+                                        options={{minDate: 'today'}}                    
+                                        onChange={date => { this.setState({date}) }}  
+                                    />
+                                </div>
+                            </div>
+                            <div className="form__btn">
+                                <button
+                                    onClick={this.clickSubmit}
+                                    className="btn-purple"
+                                >
+                                    Submit Form 
+                                </button>
+                            </div>
+                            
+                        </div>
+                    </form> 
+                </div>
+            </section>
+            
         );
     }
 }

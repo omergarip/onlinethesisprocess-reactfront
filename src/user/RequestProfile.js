@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { isAuthenticated } from '../auth';
 import { Redirect, Link } from "react-router-dom";
-import { read, createProcess, deleteProcess } from '../studentProcess/apiStudentProcess';
 import { getRequestsByUser, accept, remove } from "../adviser/apiAdviser";
+import { getProcessByUserId, updateAdviser } from '../process/apiProcess'
 import '../css/profile.css';
 
 class RequestProfile extends Component {
@@ -10,9 +10,9 @@ class RequestProfile extends Component {
         super()
         this.state = {
             requests: [],
-            studentId: '',
             redirectToSignin: false,
-            studentProcess: []
+            process: [],
+            loading: true
         }
     }
     
@@ -24,20 +24,29 @@ class RequestProfile extends Component {
             if(data.error) {
                 console.log(data.error)
             } else {
-                    if (data.length !== 0)
-                        this.setState({ 
-                            requests: data,
-                            studentId: data[0].requestedFrom._id
-                        });
-                        read(data[0].requestedFrom._id, token).then(data => {
-                            if (data.error) {
-                                console.log(data.error);
-                            } else {
-                                this.setState({ studentProcess: data });
+                if (data.length !== 0) {
+                    this.setState({ 
+                        requests: data
+                    });
+                    const studentId = data[0].requestedFrom._id
+                    getProcessByUserId(studentId, token).then(data => {
+                        if(data.error) {
+                            console.log(data.error)
+                        } {
+                            if (data.length === 0)
+                                console.log(data.error)
+                            else {
+                                this.setState({ 
+                                    process: data[0]
+                                });
                             }
-                        });
+                                
+                        }
+                    });
+                }    
             }
         });
+        
        
     }
     
@@ -47,7 +56,6 @@ class RequestProfile extends Component {
     componentDidUpdate(prevProps, prevState, snapshot) {
         const userId = isAuthenticated().user._id
         const token = isAuthenticated().token
-        const studentId = this.state.studentId
         if (this.state.requests === prevState.requests) {
             getRequestsByUser(userId, token)
             .then(data => {
@@ -56,17 +64,7 @@ class RequestProfile extends Component {
                 } else {
                     this.setState({ requests: data});
                 }
-            });
-            if (studentId !== '') {
-                read(studentId, token).then(data => {
-                    if (data.error) {
-                        console.log(data.error);
-                    } else {
-                        this.setState({ studentProcess: data });
-                    }
-                });
-            }
-                
+            });          
         }
     }
     
@@ -89,18 +87,9 @@ class RequestProfile extends Component {
                 })    
             }
         });
-        const userId = isAuthenticated().user._id;
-		const pId = this.state.studentProcess[0]._id;
-		const topic = this.state.studentProcess[0].topic._id;
-		const topicStatus = true;
-		const studentInfo = this.state.studentProcess[0].studentInfo._id;
-		const adviser = isAuthenticated().user._id;
-		const adviserStatus = true;
-		const data = {
-			studentInfo, topic, topicStatus, adviser, adviserStatus
-		};
-		console.log(data)
-		deleteProcess(userId, token, pId).then(data => {
+        const userId = isAuthenticated().user._id
+		const pId = this.state.process._id;
+		updateAdviser(pId, userId, token).then(data => {
 			if (data.error) {
 				this.setState({ error: data.error });
 			} else {
@@ -109,16 +98,6 @@ class RequestProfile extends Component {
 				});
 			}
 		});
-		createProcess(userId, token, data).then(data => {
-			if (data.error) {
-				this.setState({ error: data.error })
-			}
-			else {
-				this.setState({
-					loading: false
-				});
-			}
-		})
     };
     
     rejectRequest = event => {

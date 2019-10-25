@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { isAuthenticated } from '../auth';
 import { listFaculty } from '../user/apiUser';
 import { list } from "../research/apiResearch";
-import { getPermissions } from "../permission/apiPermission";
+import { getPermissions, create, remove  } from "../permission/apiPermission";
 import Moment from 'react-moment';
 import { Link } from 'react-router-dom';
 import DefaultProfile from '../images/avatar.png';
@@ -71,10 +71,49 @@ class Home extends Component {
         }
     }
 
+    clickSubmit = event => {
+        event.preventDefault();
+        this.setState({ loading: true });
+        const permissionFrom = isAuthenticated().user._id;
+        const token = isAuthenticated().token;
+        const permissionFor = event.target.id
+        const permissionTo = event.target.name;
+        const permission = {
+            permissionFrom, permissionTo, permissionFor 
+        };
+        create(permissionFor, token, permission).then(data => {
+            if (data.error) {
+                this.setState({ error: data.error });
+            } else {
+                this.setState({ 
+                    loading: false
+                })    
+            }
+        });
+    };
+    
+    cancelPermission = event => {
+        event.preventDefault();
+        this.setState({ loading: true });
+        const permissionId = this.state.permissions[event.target.name]._id
+        const token = isAuthenticated().token;
+        remove(permissionId, token).then(data => {
+            if (data.error) {
+                this.setState({ error: data.error });
+            } else {
+                this.setState({ 
+                    loading: false,
+                    permissions: []
+                })    
+            }
+        });
+    };
+
     renderPosts = (recentResearches) => (  
         <div className="row js--wp-1">
-            { recentResearches.map((research, i) => (
-                
+            { isAuthenticated() && (
+                recentResearches.map((research, i) => (
+                                
                     <div className="col-md-6 d-flex align-items-stretch">
                         <div className="card card-default">
                             <div className="card-header">
@@ -99,6 +138,61 @@ class Home extends Component {
                                     <p className="home__dep">
                                         <strong>Department:</strong> {research.createdBy.department } 
                                     </p>
+                                    { isAuthenticated().user._id === research.createdBy._id ?
+                            <Link 
+                                key={ i }
+                                to={`/research/${research._id}`}
+                                className="btn btn-raised btn-primary btn-sm float-right">
+                                    Read More 
+                            </Link>  : ''
+                        }
+                        
+                        { isAuthenticated().user.userType === 'student' && this.state.permissions.length === 0 ? 
+                            <button
+                                id={ research._id }
+                                name= { research.createdBy._id }
+                                onClick={this.clickSubmit}
+                                className="btn btn-raised btn-primary btn-sm float-right"> 
+                                    Ask Permission To Read
+                            </button> : this.state.permissions.map((permission, i) =>(
+                            isAuthenticated().user.userType === 'student' ? (
+                                permission.permissionFrom === isAuthenticated().user._id  ? (
+                                    permission.status === 'Accepted'
+                                    && permission.permissionFor === research._id ?
+                                    <Link 
+                                            key={ i }
+                                            to={`/research/${research._id}`}
+                                            className="btn btn-raised btn-primary btn-sm float-right">
+                                                Read More
+                                        </Link> 
+                                    : permission.status === 'Waiting for permission' 
+                                    && permission.permissionFor === research._id? 
+                                        <div className="form-group float-right"  key={ i }> 
+                                            <button 
+                                                id="waitingPermission"
+                                                className="form-control btn btn-raised btn-warning btn-sm disabled">
+                                                    Waiting for permission 
+                                            </button>
+                                            <a 
+                                                name = { i }
+                                                onClick={this.cancelPermission}
+                                                id="cancelPermission"
+                                                className="">
+                                                    Click here to cancel it
+                                            </a> 
+                                        </div> : '') :''
+                                        
+                                        
+                                        
+                                    
+                                ) : <button
+                                        id={ research._id }
+                                        onClick={this.clickSubmit}
+                                        className="btn btn-raised btn-primary btn-sm float-right"> 
+                                            Ask Permission To Read
+                                    </button>
+                                
+                        ) ) }
                                 </div>  
                             </div>
                             <div className="card-footer">
@@ -106,9 +200,8 @@ class Home extends Component {
                             </div>
                         </div>
                     </div>  
-                
-                
-            ) ) }  
+                ) )
+            )  }  
         </div>
     )
 
@@ -186,9 +279,9 @@ class Home extends Component {
                     </div>
                     <div class="info">
                         <blockquote>
-                            Web-based Thesis Workflow Management System is an application that constructs bridge between students and faculty member virtually.
-                            Thanks to this project, you as a student will search many research topics in a single page. Whenver you find the topic which fits for you best,
-                            you will be able to contact with faculty member who publishs the topic that you are interested in. On the other hand, Faculty Members will be 
+                            Web-based Thesis Workflow Management System is an application that constructs bridge between students and faculty members virtually.
+                            Thanks to this project, you as a student will search many research topics in a single page. Whenver you find the topic which fits best for you,
+                            you will be able to contact with faculty member who publishes the topic that you are interested in. On the other hand, Faculty Members will be 
                             able to find ambitious students who are interested in their research area. If you want to join this community, do not wait any longer. Click 
                             the button below to sign up!
                         </blockquote>
