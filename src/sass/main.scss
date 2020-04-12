@@ -1,0 +1,25 @@
+@import 'base/_animations';
+@import 'base/_global';
+@import 'base/_variables';
+@import 'base/_icons';
+@import 'base/_typography';
+@import 'base/_utilities';
+@import 'base/_variables';
+
+@import 'layouts/_footer';
+@import 'layouts/_header';
+@import 'layouts/_navbar';
+@import 'layouts/_sidebar';
+
+@import 'modules/_notification';
+@import 'modules/_large-hero';
+@import 'modules/_btn';
+
+@import 'pages/_committee-members';
+@import 'pages/_faculty-members';
+@import 'pages/_form';
+@import 'pages/_home';
+@import 'pages/_process';
+@import 'pages/_profile';
+@import 'pages/_researches';
+@import 'pages/_thesis';

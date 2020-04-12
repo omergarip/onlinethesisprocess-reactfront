@@ -2,9 +2,8 @@ import React, { Component } from 'react';
 import 'flatpickr/dist/themes/material_green.css'
 import Flatpickr from 'react-flatpickr'
 import { isAuthenticated } from '../auth';
-import { getProcess, updateForm } from '../process/apiProcess';
+import { getProcessByUserId, updateForm } from '../process/apiProcess';
 import { create, getForm } from "./apiForm";
-import '../css/profile.css';
 import Logo from '../images/ylogo.png'
 
 class NewForm extends Component {
@@ -25,28 +24,28 @@ class NewForm extends Component {
             redirectToProfile: false
         }
     }
-    
+
     componentDidMount() {
-        const pId = this.props.match.params.pId;
-		const token = isAuthenticated().token;
-		getProcess(pId, token).then(data => {
-			if (data.error) {
-				console.log(data.error);
-			} else {
-				if (data.length === 0)
-					console.log(data.error)
-				else {
-					this.setState({ 
-                        pId : data[0]._id,
+        const userId = isAuthenticated().user._id;
+        const token = isAuthenticated().token;
+        getProcessByUserId(userId, token).then(data => {
+            if (data.error) {
+                console.log(data.error);
+            } else {
+                if (data.length === 0)
+                    console.log(data.error)
+                else {
+                    this.setState({
+                        pId: data[0]._id,
                         adviserId: data[0].adviserId._id,
-                        adviserName : `${data[0].adviserId.fname} ${data[0].adviserId.lname}`,
-						loading: false
-					});
-				}	
-			}
-		});
+                        adviserName: `${data[0].adviserId.fname} ${data[0].adviserId.lname}`,
+                        loading: false
+                    });
+                }
+            }
+        });
     }
-    
+
     isValid = () => {
         const { proposedTitle, date, address } = this.state;
         if (proposedTitle.length === 0 || date.length === 0 || address.length === 0) {
@@ -56,9 +55,9 @@ class NewForm extends Component {
         return true;
     };
 
-    handleChange = ( name ) => event => {
-        this.setState({ error: ""});
-        this.setState({ 
+    handleChange = (name) => event => {
+        this.setState({ error: "" });
+        this.setState({
             [name]: event.target.value
         });
     };
@@ -70,7 +69,7 @@ class NewForm extends Component {
             const token = isAuthenticated().token;
             const { pId, adviserId, proposedTitle, address, date, zipcode, city, state } = this.state
             const form = {
-                studentId, adviserId, address, proposedTitle, date, zipcode, city, state 
+                studentId, adviserId, address, proposedTitle, date, zipcode, city, state
             }
             create(pId, token, form).then(data => {
                 if (data.error) {
@@ -87,35 +86,35 @@ class NewForm extends Component {
                                 } else {
                                     this.setState({
                                         loading: false,
-                                        redirectToProfile:  true
+                                        redirectToProfile: true
                                     });
                                 }
                             });
                         }
-                    }); 
+                    });
                 }
             });
         }
     };
 
     redirectToTarget = (pId) => {
-		this.props.history.push(`/thesis-process/${pId}`)
-	}
+        this.props.history.push(`/thesis-process/${pId}`)
+    }
 
     render() {
         const { redirectToProfile, pId, adviserName } = this.state
-        if(redirectToProfile)
+        if (redirectToProfile)
             this.redirectToTarget(pId)
 
-            
-            
+
+
         return (
             <section className="section__form">
                 <div class="container main-secction" >
                     <div className="d-flex flex-row justify-content-center">
                         <img
                             style={{ height: "200px", width: "auto" }}
-                            className="img-fluid" src={ Logo } /> 
+                            className="img-fluid" src={Logo} />
                     </div>
                     <h3 className="text-center"><strong>SUPERVISOR APPOINTMENT FORM</strong></h3>
                     <form>
@@ -124,7 +123,7 @@ class NewForm extends Component {
                                 <div className="form-group">
                                     <label className="text-muted">Banner ID</label>
                                     <input
-                                        value= { isAuthenticated().user.bannerId }
+                                        value={isAuthenticated().user.bannerId}
                                         type="text"
                                         className="form-control"
                                         disabled
@@ -135,7 +134,7 @@ class NewForm extends Component {
                                 <div className="form-group">
                                     <label className="text-muted">Student Name</label>
                                     <input
-                                        value = { `${isAuthenticated().user.fname} ${isAuthenticated().user.lname}`}
+                                        value={`${isAuthenticated().user.fname} ${isAuthenticated().user.lname}`}
                                         type="text"
                                         className="form-control"
                                         disabled
@@ -146,7 +145,7 @@ class NewForm extends Component {
                                 <div className="form-group">
                                     <label className="text-muted">Adviser Name</label>
                                     <input
-                                        value = { adviserName }
+                                        value={adviserName}
                                         type="text"
                                         className="form-control"
                                         disabled
@@ -156,7 +155,7 @@ class NewForm extends Component {
                             <div className="form-group col-md-12">
                                 <label className="text-muted">Address</label>
                                 <input
-                                    onChange={this.handleChange("address")}   
+                                    onChange={this.handleChange("address")}
                                     type="text"
                                     className="form-control"
                                 />
@@ -164,7 +163,7 @@ class NewForm extends Component {
                             <div className="form-group col-md-6">
                                 <label className="text-muted">City</label>
                                 <input
-                                    onChange={this.handleChange("city")}   
+                                    onChange={this.handleChange("city")}
                                     type="text"
                                     className="form-control"
                                 />
@@ -172,7 +171,7 @@ class NewForm extends Component {
                             <div className="form-group col-md-3">
                                 <label className="text-muted">State</label>
                                 <input
-                                    onChange={this.handleChange("state")}   
+                                    onChange={this.handleChange("state")}
                                     type="text"
                                     className="form-control"
                                 />
@@ -180,7 +179,7 @@ class NewForm extends Component {
                             <div className="form-group col-md-3">
                                 <label className="text-muted">Zip Code</label>
                                 <input
-                                    onChange={this.handleChange("zipcode")}   
+                                    onChange={this.handleChange("zipcode")}
                                     type="text"
                                     className="form-control"
                                 />
@@ -188,7 +187,7 @@ class NewForm extends Component {
                             <div className="form-group col-md-8">
                                 <label className="text-muted">Proposed title of thesis/dissertation/portfolio</label>
                                 <input
-                                    onChange={this.handleChange("proposedTitle")}    
+                                    onChange={this.handleChange("proposedTitle")}
                                     type="text"
                                     className="form-control"
                                 />
@@ -197,8 +196,8 @@ class NewForm extends Component {
                                 <div className="form-group">
                                     <label className="text-muted">Anticipated Completion Date</label>
                                     <Flatpickr data-enable-time
-                                        options={{minDate: 'today'}}                    
-                                        onChange={date => { this.setState({date}) }}  
+                                        options={{ minDate: 'today' }}
+                                        onChange={date => { this.setState({ date }) }}
                                     />
                                 </div>
                             </div>
@@ -207,15 +206,15 @@ class NewForm extends Component {
                                     onClick={this.clickSubmit}
                                     className="btn-purple"
                                 >
-                                    Submit Form 
+                                    Submit Form
                                 </button>
                             </div>
-                            
+
                         </div>
-                    </form> 
+                    </form>
                 </div>
             </section>
-            
+
         );
     }
 }

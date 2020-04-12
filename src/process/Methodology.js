@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { isAuthenticated } from '../auth';
-import { getProcess } from './apiProcess';
+import { getProcessByUserId } from './apiProcess';
 import { updateMethodologyStatus } from '../thesis/apiThesis';
 
 class LiteratureReview extends Component {
@@ -19,20 +19,20 @@ class LiteratureReview extends Component {
 	}
 
 	componentDidMount() {
-		const pId = this.props.pId;
-		const token = isAuthenticated().token;
-		getProcess(pId, token).then(data => {
+		const userId = isAuthenticated().user._id;
+        const token = isAuthenticated().token;
+        getProcessByUserId(userId, token).then(data => {
 			if (data.error) {
 				console.log(data.error);
 			} else {
-                if(data[0].methodologyId === undefined)
+                if(data[0].methodologyId === undefined && data[0].reviewId !== undefined)
                     this.setState({ 
-                        process : data[0],
+                        process : [0],
                         pId : data[0]._id,
                         reviewStatus: data[0].reviewId.status,
                         loading: false
                     });	
-                else 
+                if(data[0].methodologyId !== undefined)
                     this.setState({ 
                         process : data[0],
                         pId : data[0]._id,
@@ -50,9 +50,9 @@ class LiteratureReview extends Component {
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.state.methodologyStatus === prevState.methodologyStatus) {
-            const pId = this.props.pId;
+            const userId = isAuthenticated().user._id;
             const token = isAuthenticated().token;
-            getProcess(pId, token).then(data => {
+            getProcessByUserId(userId, token).then(data => {
                 if (data.error) {
                     console.log(data.error);
                 } else {
@@ -63,7 +63,7 @@ class LiteratureReview extends Component {
                         reviewStatus: data[0].reviewId.status,
                         loading: false
                     });	
-                else 
+                    if(data[0].methodologyId !== undefined)
                     this.setState({ 
                         process : data[0],
                         pId : data[0]._id,

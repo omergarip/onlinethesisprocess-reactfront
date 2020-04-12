@@ -1,0 +1,63 @@
+
+
+.section__faculty-members { 
+    background-color: #f4f4f4; 
+
+    & .row { justify-content: space-around; }
+}
+
+.section__info {
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0.7)), to(rgba(0, 0, 0, 0.7))), url(../images/jones.jpg);
+    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(../images/jones.jpg);
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    height: 55%;
+    color: white;
+
+    & .row { justify-content: center; }
+
+    & blockquote {
+        padding: 2% 13%;
+        font-style: italic;
+        line-height: 145%;
+        position: relative;
+        margin-top: 4rem;
+        font-size: 2rem;
+        letter-spacing: 0.2rem;
+        text-align: justify;
+
+        &:before {
+            margin-left: 10%;
+            content: "\201C";
+            font-size: 500%;
+            display: block;
+            position: absolute;
+            top: 3rem;
+            left: -3px;
+        }
+
+        &::after {
+            margin-left: 1%;
+            content: "\201D";
+            font-size: 500%;
+            display: block;
+            position: absolute;
+            top: 20rem;
+            right: 20rem;
+        }
+    }
+
+    & cite {
+        font-size: 90%;
+        margin-top: 25px;
+        display: block;
+
+        & img {
+            height: 45px;
+            border-radius: 50%;
+            margin-right: 10px;
+            vertical-align: middle
+        }
+    }
+}

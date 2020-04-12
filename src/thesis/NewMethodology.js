@@ -3,7 +3,6 @@ import { isAuthenticated } from '../auth';
 import { getMethodologyByProcessId, createMethodology } from './apiThesis';
 import { updateMethodology, getProcess } from '../process/apiProcess';
 import { Redirect } from 'react-router-dom';
-import '../css/main.css';
 import CKEditor from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
@@ -15,8 +14,8 @@ class NewMethodology extends Component {
 			methodologyBody: '',
 			reference: '',
 			references: [],
-            methodologyId: '',
-            adviserId: '',
+			methodologyId: '',
+			adviserId: '',
 			error: '',
 			adviserId: '',
 			loading: false,
@@ -31,11 +30,11 @@ class NewMethodology extends Component {
 			if (data.error) {
 				console.log(data.error);
 			} else {
-                this.setState({ 
-                    process : data[0],	
-                    adviserId: data[0].adviserId._id,			
-                    loading: false
-                });	
+				this.setState({
+					process: data[0],
+					adviserId: data[0].adviserId._id,
+					loading: false
+				});
 			}
 		});
 	}
@@ -44,12 +43,12 @@ class NewMethodology extends Component {
 		this.setState({ error: '' });
 		this.setState({
 			[name]: event.target.value
-		});			
+		});
 	};
 
 	handleEditorChange() {
-		return ( event, editor ) => {
-			this.setState( { methodologyBody: editor.getData() } );
+		return (event, editor) => {
+			this.setState({ methodologyBody: editor.getData() });
 		}
 	}
 
@@ -72,8 +71,8 @@ class NewMethodology extends Component {
 
 	clickSubmit = event => {
 		event.preventDefault();
-        const processId = this.props.match.params.pId;
-        const adviserId = this.state.adviserId;
+		const processId = this.props.match.params.pId;
+		const adviserId = this.state.adviserId;
 		const token = isAuthenticated().token;
 		const { methodologyTitle, methodologyBody, references } = this.state
 		const methodology = {
@@ -88,19 +87,19 @@ class NewMethodology extends Component {
 						this.setState({ error: data.error });
 					} else {
 						const metId = data[0]._id
-						this.setState({ introId: data[0]})
+						this.setState({ introId: data[0] })
 						updateMethodology(processId, metId, token).then(data => {
 							if (data.error) {
 								this.setState({ error: data.error });
 							} else {
 								this.setState({
 									loading: false,
-									redirectToProfile:  true
+									redirectToProfile: true
 								});
 							}
 						});
 					}
-				}); 
+				});
 			}
 		});
 	};
@@ -123,10 +122,10 @@ class NewMethodology extends Component {
 			<div className="form-group">
 				<label className="text-muted">Body</label>
 				<CKEditor
-					editor={ ClassicEditor }
-					data={ methodologyBody || ''}
-					onChange={this.handleEditorChange()}	
-                />	
+					editor={ClassicEditor}
+					data={methodologyBody || ''}
+					onChange={this.handleEditorChange()}
+				/>
 			</div>
 			<ul class="list">
 				{this.state.references.map((reference, i) => (
@@ -148,15 +147,15 @@ class NewMethodology extends Component {
 				/>
 			</div>
 			{
-				
-				<button 
-					onClick={this.clickSubmit} 
-					className="btn-purple" 
+
+				<button
+					onClick={this.clickSubmit}
+					className="btn-purple"
 					id="process__btn" >
-						Save and Close
+					Save and Close
 				</button>
 			}
-			
+
 		</form>
 	);
 
@@ -179,12 +178,12 @@ class NewMethodology extends Component {
 						<h2>Loading...</h2>
 					</div>
 				) : (
-					''
-				)}
+						''
+					)}
 
 				{this.NewMethodology(methodologyTitle, methodologyBody)}
 			</div>
-			
+
 		);
 	}
 }

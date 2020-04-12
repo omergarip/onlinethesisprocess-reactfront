@@ -1,0 +1,16 @@
+#thesis {
+    font-size: 2rem;
+
+    & input {
+        font-size: 2rem;
+    }
+
+    & button { 
+        font-size: 2rem;
+        margin-bottom: 2rem;
+    } 
+
+    & form {
+        margin: 8.55rem auto;
+    }
+}

@@ -6,7 +6,8 @@
     text-decoration: underline;
     color: blue;
     cursor: pointer;
-    
+	font-size: 1.25rem;
+	text-align: center;
 }
 
 .ck-content {
@@ -90,3 +91,4 @@ body {
 ::placeholder {
     color: #34495e;
 }
+

@@ -1,0 +1,106 @@
+header {
+    background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0.7)), to(rgba(0, 0, 0, 0.7))), url(../images/jones.jpg);
+    background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url(../images/jones.jpg);
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    height: 100vh;
+}
+
+.home-profile { 
+    border-radius: 50%;
+    height: 2.5rem;
+    margin-bottom: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.text-box {
+    position: absolute;
+    top: 47%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.heading-primary {
+    width: 100%;
+    color: #fff;
+    backface-visibility: hidden;
+}
+
+.heading-primary-main {
+    width: 100%;
+    display: block;
+    font-size: 6rem;
+    font-weight: 400;
+    letter-spacing: 1.5rem;
+    animation-name: moveInLeft;
+    animation-duration: 1s;
+    animation-timing-function: ease-out; 
+}
+
+.heading-primary-sub {
+    display: block;
+    margin-top: 2rem;
+    margin-bottom: 8rem;
+    font-size: 2.45rem;
+    font-weight: 700;
+    letter-spacing: 1.1rem;
+    animation: moveInRight 1s ease-out;
+}
+
+@keyframes moveInLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-10rem);
+    }
+
+    80% {
+        transform: translateX(1rem);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(0)
+    }
+}
+
+@keyframes moveInRight {
+    0% {
+        opacity: 0;
+        transform: translateX(10rem);
+    }
+
+    80% {
+        transform: translateX(-1rem);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(0)
+    }
+}
+
+.main-logo {
+    height: 6rem;
+    width: auto;
+    margin-top: 4rem;
+	margin-left: 8rem;
+	
+}
+
+.main-logo-black { 
+    display: none; 
+    height: 5rem;
+    width: auto;
+    float: left;
+    margin-top: 0.9rem;
+	margin-left: 8rem;
+}
+
+.secondary-logo-black {
+    height: 5rem;
+    width: auto;
+    float: left;
+    margin-top: 0.9rem;
+	margin-left: 8rem;
+}

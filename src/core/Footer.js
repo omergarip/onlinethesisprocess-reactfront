@@ -3,9 +3,9 @@ import React from 'react';
 const Footer = () => (
     <footer>
         <div className="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <ul class="footer-nav">
+            <div className="row">
+                <div className="col-md-6">
+                    <ul className="footer-nav">
                         <li>One University Plaza</li>
                         <li>Youngstown, OH 44555</li>
                         <li>330.941.3000</li>
@@ -15,29 +15,26 @@ const Footer = () => (
                         <li></li>
                     </ul>
                 </div>
-                <div class="col-md-6">
-                    <ul class="social-links">
+                <div className="col-md-6">
+                    <ul className="social-links">
                         <li>
-                            <a href="#"><i class="icon ion-logo-facebook"></i></a>
+                            <a href="https://www.facebook.com/YSUGradStudies/" target="_blank"><i className="icon ion-logo-facebook"></i></a>
                         </li>
                         <li>
-                            <a href="#"><i class="icon ion-logo-twitter"></i></a>
+                            <a href="https://twitter.com/ysugradcollege" target="_blank"><i className="icon ion-logo-twitter"></i></a>
                         </li>
                         <li>
-                            <a href="#"><i class="icon ion-logo-googleplus"></i></a>
-                        </li>
-                        <li>
-                            <a href="#"><i class="icon ion-logo-instagram"></i></a>
+                            <a href="https://www.linkedin.com/groups/12177012/" target="_blank"><i className="icon ion-logo-instagram"></i></a>
                         </li>
                     </ul>
                 </div>
             </div>
-        </div>    
-         <div class="row">
-             <p>Copyright &copy; 2019 by Youngstown State University. All rights reserved.</p>
-         </div>
-     </footer>
-    
+        </div>
+        <div className="row">
+            <p>Copyright &copy; 2020 by Youngstown State University. All rights reserved.</p>
+        </div>
+    </footer>
+
 )
 
 export default Footer;

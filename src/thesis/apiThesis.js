@@ -46,6 +46,22 @@ export const getIntroductionByProcessId = (pId, token) => {
 		.catch(err => console.log(err));
 };
 
+export const getIntroductionByAdviserId = (userId, token) => {
+	return window
+		.fetch(`${process.env.REACT_APP_API_URL}/user/${userId}/introduction`, {
+			method: 'GET',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			}
+		})
+		.then(response => {
+			return response.json();
+		})
+		.catch(err => console.log(err));
+};
+
 export const getIntroduction = (introId, token) => {
 	return window
 		.fetch(`${process.env.REACT_APP_API_URL}/introduction/${introId}`, {
@@ -122,7 +138,7 @@ export const update = (introId, token, introduction) => {
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`
 			},
-			body: JSON.stringify(introduction	)
+			body: JSON.stringify(introduction)
 		})
 		.then(response => {
 			return response.json();

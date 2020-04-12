@@ -1,0 +1,120 @@
+
+/* LINKS */
+
+.mainlink:link,
+.mainlink:visited {
+    font-size: 2rem;
+    color: #e67e22;
+    text-decoration: none;
+    padding-bottom: 0.1rem;
+    border-bottom: 0.1rem solid #e67e22;
+    -webkit-transition: border-bottom 0.2s, color 0.1s;
+    transition: border-bottom 0.2s, color 0.1s;
+}
+
+.mainlink:hover,
+.mainlink:active {
+    color: #555;
+    border-bottom: 0.1rem solid transparent;
+}
+
+/* BUTTONS */
+
+.mainbtn:link,
+.mainbtn:visited {
+    display: inline-block;
+    padding: 1.5rem 6rem;
+    font-weight: 300;
+    text-decoration: none;
+    border-radius: 20rem;
+    -webkit-transition: background-color 0.2s, border 0.2, color 0.2s;
+    transition: background-color 0.2s, border 0.2, color 0.2s;
+    cursor: pointer;
+    font-size: 1.75rem;
+}
+
+.mainbtn-full:link,
+.mainbtn-full:visited {
+    background-color: #e67e22;
+    border: 0.1rem solid #e67e22;
+    color: #fff;
+    margin-right: 1.5rem;
+    cursor: pointer;
+}
+
+.mainbtn-ghost:link,
+.mainbtn-ghost:visited {
+    border: 0.1rem solid #e67e22;
+    color: #e67e22;
+}
+
+.mainbtn:hover,
+.mainbtn:active {
+    background-color: #cf6d17;
+    cursor: pointer;
+}
+
+.mainbtn-full:hover,
+.mainbtn-full:active {
+    border: 0.1rem solid #cf6d17;
+}
+
+.mainbtn-ghost:hover,
+.mainbtn-ghost:active {
+    border: 0.1rem solid #cf6d17;
+    color: #fff;
+}
+
+.discover__btn {
+    font-size: 2rem;
+    font-weight: bold;
+    display: inline-block;
+    padding: 1.2rem 6rem;
+    text-transform: uppercase;
+    border-radius: 10rem;
+}
+
+.btn-purple {
+    margin-bottom: 3rem;
+    font-size: 2rem;
+    font-weight: bold;
+    display: inline-block;
+    padding: 1.2rem 6rem;
+    text-transform: uppercase;
+    border-radius: 10rem;
+    color: #fff; 
+    background: #7e62fd;
+
+    &:hover {
+        color: #fff; 
+    background: #4bc3c3;
+    text-decoration: none;
+    }
+}
+
+.info__btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-gradient {
+    color: #fff;
+    border: none;
+    background-image: linear-gradient(to right, #25bfbf 0%, #6edcaa 100%);
+
+}
+
+.discover__more {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    margin-top: 6rem;
+}
+
+.btn-gradient:hover {
+    color: #fff;
+    background-image: -webkit-linear-gradient(left, #6edcaa 0%, #25bfbf 100%);
+    background-image:         linear-gradient(to right, #6edcaa 0%, #25bfbf 100%);
+    text-decoration: none;
+}

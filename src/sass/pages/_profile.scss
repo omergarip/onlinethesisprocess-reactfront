@@ -1,11 +1,25 @@
+.main-secction{
+    box-shadow: 1rem 1rem 1rem;
+    margin-bottom: 22.6rem;
+
+    & a,
+    & button { font-size: 1.6rem;}
+
+    & h1 { 
+        color: #000;
+        font-size: 1.6rem;
+    }
+
+    & h5,
+    & h6,
+    & p { font-size: 1.6rem;}
+}
 
   .border{
     border-bottom:0.1rem solid #F1F1F1;
     margin-bottom:1rem;
   }
-  .main-secction{
-    box-shadow: 1rem 1rem 1rem;
-  }
+ 
   .image-section{
     padding: 0;
   }
@@ -113,4 +127,17 @@
     color:#7F7F7F;
   }
 
-  
+  .modal {
+    margin-top: 10rem;
+}
+
+.modal textarea,
+.modal h5,
+.modal label,
+.modal button {
+    font-size: 1.75rem;
+}
+
+#signup-button {
+    margin-top: 0;
+  }

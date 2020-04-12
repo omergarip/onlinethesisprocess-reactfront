@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { isAuthenticated } from '../auth';
 import { getIntroductionByProcessId, update } from './apiThesis';
 import { Redirect } from 'react-router-dom';
-import '../css/main.css';
 import CKEditor from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
@@ -10,7 +9,7 @@ class Introduction extends Component {
 	constructor() {
 		super();
 		this.state = {
-            introId: '',
+			introId: '',
 			introTitle: 'Introduction',
 			introBody: '',
 			reference: '',
@@ -23,19 +22,19 @@ class Introduction extends Component {
 	}
 
 	componentDidMount() {
-        const pId = this.props.match.params.pId;
+		const pId = this.props.match.params.pId;
 		const token = isAuthenticated().token;
 		getIntroductionByProcessId(pId, token).then(data => {
 			if (data.error) {
 				console.log(data.error);
 			} else {
-                this.setState({             
-                    introId : this.props.match.params.introId,
-                    introTitle : data[0].introTitle,
-                    introBody : data[0].introBody,
-                    references : data[0].references,				
-                    loading: false
-                });	
+				this.setState({
+					introId: this.props.match.params.introId,
+					introTitle: data[0].introTitle,
+					introBody: data[0].introBody,
+					references: data[0].references,
+					loading: false
+				});
 			}
 		});
 	}
@@ -44,12 +43,12 @@ class Introduction extends Component {
 		this.setState({ error: '' });
 		this.setState({
 			[name]: event.target.value
-		});			
+		});
 	};
 
 	handleEditorChange() {
-		return ( event, editor ) => {
-			this.setState( { introBody: editor.getData() } );
+		return (event, editor) => {
+			this.setState({ introBody: editor.getData() });
 		}
 	}
 
@@ -79,15 +78,15 @@ class Introduction extends Component {
 			introTitle, introBody, references
 		}
 		update(introId, token, introduction).then(data => {
-            if (data.error) {
-                this.setState({ error: data.error });
-            } else {
-                this.setState({
-                    loading: false,
-                    redirectToProfile:  true
-                });
-            }
-        });
+			if (data.error) {
+				this.setState({ error: data.error });
+			} else {
+				this.setState({
+					loading: false,
+					redirectToProfile: true
+				});
+			}
+		});
 	};
 
 	redirectToTarget = (pId) => {
@@ -108,10 +107,10 @@ class Introduction extends Component {
 			<div className="form-group">
 				<label className="text-muted">Body</label>
 				<CKEditor
-					editor={ ClassicEditor }
-					data={ introBody || ''}
-					onChange={this.handleEditorChange()}	
-                />	
+					editor={ClassicEditor}
+					data={introBody || ''}
+					onChange={this.handleEditorChange()}
+				/>
 			</div>
 			<ul class="list">
 				{this.state.references.map((reference, i) => (
@@ -133,15 +132,15 @@ class Introduction extends Component {
 				/>
 			</div>
 			{
-				
-				<button 
-					onClick={this.clickSubmit} 
-					className="btn-purple" 
+
+				<button
+					onClick={this.clickSubmit}
+					className="btn-purple"
 					id="process__btn" >
-						Save and Close
+					Save and Close
 				</button>
 			}
-			
+
 		</form>
 	);
 
@@ -164,12 +163,12 @@ class Introduction extends Component {
 						<h2>Loading...</h2>
 					</div>
 				) : (
-					''
-				)}
+						''
+					)}
 
 				{this.NewIntroduction(introTitle, introBody)}
 			</div>
-			
+
 		);
 	}
 }

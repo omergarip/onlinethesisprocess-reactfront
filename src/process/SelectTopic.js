@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { isAuthenticated } from '../auth';
-import { getProcess } from './apiProcess';
+import { getProcessByUserId } from './apiProcess';
 
 class SelectTopic extends Component {
 	constructor() {
@@ -13,9 +13,9 @@ class SelectTopic extends Component {
 	}
 
 	componentDidMount() {
-		const pId = this.props.pId;
-		const token = isAuthenticated().token;
-		getProcess(pId, token).then(data => {
+		const userId = isAuthenticated().user._id;
+        const token = isAuthenticated().token;
+        getProcessByUserId(userId, token).then(data => {
 			if (data.error) {
 				console.log(data.error);
 			} else {

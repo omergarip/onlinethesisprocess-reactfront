@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { isAuthenticated } from '../auth';
-import { getProcess } from './apiProcess';
+import { getProcessByUserId } from './apiProcess';
 import { updateIntroStatus } from '../thesis/apiThesis';
 
 class Introduction extends Component {
@@ -18,19 +18,32 @@ class Introduction extends Component {
 	}
 
 	componentDidMount() {
-		const pId = this.props.pId;
+		const userId = isAuthenticated().user._id;
 		const token = isAuthenticated().token;
-		getProcess(pId, token).then(data => {
+		getProcessByUserId(userId, token).then(data => {
 			if (data.error) {
 				console.log(data.error);
 			} else {
-                this.setState({ 
-                    process : data[0],
-                    pId : data[0]._id,
-                    introId: data[0].introductionId._id,
-                    status: data[0].introductionId.status,
-                    loading: false
-                });	
+                if(data[0].introductionId !== undefined) {
+                    console.log(data.introductionId)
+                    this.setState({ 
+                        process : data[0],
+                        pId : data[0]._id,
+                        introId: data[0].introductionId._id,
+                        status: data[0].introductionId.status,
+                        loading: false
+                        
+                    });	 
+                    
+                } if(data[0].introductionId === undefined) {
+                    this.setState({ 
+                        process : data[0],
+                        pId : data[0]._id,
+                        loading: false
+                    });	 
+                    console.log(data.introductionId)
+                }
+                           
 			}
         });
     }
@@ -40,19 +53,28 @@ class Introduction extends Component {
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.state.status === prevState.status) {
-            const pId = this.props.pId;
+            const userId = isAuthenticated().user._id;
             const token = isAuthenticated().token;
-            getProcess(pId, token).then(data => {
+            getProcessByUserId(userId, token).then(data => {
                 if (data.error) {
                     console.log(data.error);
                 } else {
-                    this.setState({ 
-                        process : data[0],
-                        pId : data[0]._id,
-                        introId: data[0].introductionId._id,
-                        status: data[0].introductionId.status,
-                        loading: false
-                    });	
+                    if(data[0].introductionId !== undefined) {
+                        console.log(data.introductionId)
+                        this.setState({ 
+                            process : data[0],
+                            pId : data[0]._id,
+                            introId: data[0].introductionId._id,
+                            status: data[0].introductionId.status,
+                            loading: false
+                        });	 
+                    } if(data[0].introductionId === undefined) {
+                        this.setState({ 
+                            process : data[0],
+                            pId : data[0]._id,
+                            loading: false
+                        });	 
+                    }
                 }
             });
         }
@@ -82,7 +104,7 @@ class Introduction extends Component {
 		return (
             <>
             
-                {   process.topicId && process.adviserId && process.formId ? (	
+                {  process.topicId && process.adviserId && process.formId ? (	
                     <div>	
                         <div class="panel-heading mt-4" role="tab" id="headingOne">
                             <h4 class="panel-title">

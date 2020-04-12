@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { isAuthenticated } from '../auth';
-import { getProcess } from './apiProcess';
+import { getProcessByUserId } from './apiProcess';
 
 class ThesisForm extends Component {
 	constructor() {
@@ -13,9 +13,9 @@ class ThesisForm extends Component {
 	}
 
 	componentDidMount() {
-		const pId = this.props.pId;
-		const token = isAuthenticated().token;
-		getProcess(pId, token).then(data => {
+		const userId = isAuthenticated().user._id;
+        const token = isAuthenticated().token;
+        getProcessByUserId(userId, token).then(data => {
 			if (data.error) {
 				console.log(data.error);
 			} else {
@@ -68,7 +68,7 @@ class ThesisForm extends Component {
                                         <div className="d-flex justify-content-center">
                                             <Link
                                                 id="process__link"
-                                                to={`/user/${isAuthenticated().user._id}/thesis-form`}
+                                                to={`/thesis-process/${process._id}/form/${process.formId}`}
                                             >
                                                 View Form
                                             </Link>

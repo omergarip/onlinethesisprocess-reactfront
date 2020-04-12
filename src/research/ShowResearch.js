@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { getResearch } from './apiResearch';
 import { getProcessByUserId, updateProcess } from '../process/apiProcess';
 import { isAuthenticated } from '../auth';
-import '../css/main.css';
 import { Link } from 'react-router-dom';
 
 class ShowResearch extends Component {
@@ -28,13 +27,13 @@ class ShowResearch extends Component {
 				if (data.length === 0)
 					console.log(data.error)
 				else {
-					this.setState({ 
-						processData : data[0],
+					this.setState({
+						processData: data[0],
 						studentId: data[0].studentId._id,
-						newProcess : false,
+						newProcess: false,
 						loading: false
 					});
-				}	
+				}
 			}
 		});
 		getResearch(researchId, token).then(data => {
@@ -44,7 +43,7 @@ class ShowResearch extends Component {
 				this.setState({ research: data, createdBy: data.createdBy });
 			}
 		});
-		
+
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
@@ -61,13 +60,13 @@ class ShowResearch extends Component {
 					if (data.length === 0)
 						console.log(data.error)
 					else {
-						this.setState({ 
-							processData : data[0],
+						this.setState({
+							processData: data[0],
 							studentId: data[0].studentId._id,
-							newProcess : false,
+							newProcess: false,
 							loading: false
 						});
-					}	
+					}
 				}
 			});
 		}
@@ -81,11 +80,11 @@ class ShowResearch extends Component {
 		const token = isAuthenticated().token;
 		updateProcess(pId, rId, token)
 			.then(data => {
-				if (data.error) 
+				if (data.error)
 					console.log(data.error);
 				else
-					this.setState({	newProcess: false });
-		});
+					this.setState({ newProcess: false });
+			});
 
 	};
 
@@ -98,45 +97,54 @@ class ShowResearch extends Component {
 					<hr id="seperator" />
 					<div className="researcher__info form-group">
 						<p className="">
-							<strong>Submitted By: </strong> 
+							<strong>Submitted By: </strong>
 							<a className="researcher__info-btn" href={`/user/${createdBy._id}`}>
-								<img src={ `${process.env.REACT_APP_API_URL}/user/photo/${createdBy._id}?${new Date().getTime()}`  } 
-									alt={ `${createdBy.fname} ${createdBy.lname}` } 
-									className="home-profile" 
+								<img src={`${process.env.REACT_APP_API_URL}/user/photo/${createdBy._id}?${new Date().getTime()}`}
+									alt={`${createdBy.fname} ${createdBy.lname}`}
+									className="home-profile"
 								/>
-								{ `${createdBy.fname} ${createdBy.lname}` } 
+								{`${createdBy.fname} ${createdBy.lname}`}
 							</a>
 						</p>
 						<p className="home__dep">
-							<strong>Department:</strong> {createdBy.department } 
+							<strong>Department:</strong> {createdBy.department}
 						</p>
 						<p className="home__dep">
 							<strong>Email: </strong> <a href={`mailto:${createdBy.email}`}>{createdBy.email} </a>
 						</p>
-					</div>	
+					</div>
 					<br />
 					<br />
 					<br />
 
-					{ 
-						isAuthenticated().user.userType === 'student' && 
-						this.state.studentId === isAuthenticated().user._id && 
-						this.state.processData.topicId === undefined ? (
-							<button onClick={this.clickSubmit} className="btn btn-info">
+					{this.state.studentId === "" ?
+						<>
+							<button onClick={this.clickSubmit} className="btn btn-info mt-1">
 								Select This Topic
 							</button>
-						) : (
-							<div>
-								<p className="text-primary">
-									You have selected this topic for your thesis. Now, you
-									can select your adviser.
+							<button onClick={this.clickSubmit} className="btn btn-danger mt-1">
+								Do Not Select This Topic
+							</button>
+						</>
+						:
+						isAuthenticated().user.userType === 'student' &&
+							this.state.studentId === isAuthenticated().user._id &&
+							this.state.processData.topicId === undefined ? (
+								<button onClick={this.clickSubmit} className="btn btn-info">
+									Select This Topic
+								</button>
+							) : (
+								<div>
+									<p className="text-primary">
+										You have selected this topic for your thesis. Now, you
+										can select your adviser.
 								</p>
-								<Link className="btn btn-primary" to={`/thesis-process/${ this.state.processData._id}`}>
-									Go Back to Your Process Page
+									<Link className="btn btn-primary" to={`/thesis-process/${this.state.processData._id}`}>
+										Go Back to Your Process Page
 								</Link>
-							</div>
-							
-					)}
+								</div>
+
+							)}
 				</div>
 
 				<div class="card-footer text-muted text-center">
@@ -150,17 +158,17 @@ class ShowResearch extends Component {
 
 		return (
 			<>
-			{ loading ? (
-				<div className="jumbotron text-center loading__screen">
-					<h2>Loading...</h2>
-				</div>
-			) : 
-				<section className="section__researches ">
-					<div className="container">
-						{this.renderPosts(research, createdBy)}
+				{loading ? (
+					<div className="jumbotron text-center loading__screen">
+						<h2>Loading...</h2>
 					</div>
-				</section>
-			}
+				) :
+					<section className="section__researches ">
+						<div className="container">
+							{this.renderPosts(research, createdBy)}
+						</div>
+					</section>
+				}
 			</>
 		);
 	}

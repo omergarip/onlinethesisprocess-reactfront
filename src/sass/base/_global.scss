@@ -1,0 +1,44 @@
+* {
+    margin: 0;
+    padding: 0;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.clearfix {
+    zoom: 1;
+
+    &::after {
+        content: '.';
+        clear: both;
+        display: block;
+        height: 0;
+        visibility: hidden;
+    }
+}
+
+
+html, body {
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    overflow-x: hidden;
+}
+html {
+	font-size: 62.5%; 
+}
+
+body {
+	background-color: #fff;
+    color: #000;
+    font-family: open sans,sans-serif;
+    font-weight: 400;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+}
+
+#seperator {
+    height: 0.1rem;
+    background-color: #000;
+    margin-top: auto;
+}

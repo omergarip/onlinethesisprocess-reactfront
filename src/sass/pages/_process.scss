@@ -1,0 +1,63 @@
+.section__process {
+  
+    & .col-md-8 {
+        display: flex;
+        align-items: center;
+    }
+
+    & .display-6 { 
+        font-size: 3rem;
+        color: #000;
+        font-weight: 700;
+    }
+
+    & .lead {
+        font-size: 1.7rem;
+        text-align: center;
+        font-weight: 500;
+    }
+
+    & .new-process {
+        font-size: 2rem;
+        padding: 0.5rem 2rem;
+        border-radius: 50px;
+    }
+
+    & .workflow {
+        position: relative;
+
+        & a {
+            position: absolute;
+            top: 50%;
+            left: 25%;
+        }
+
+        & img {
+            width: 100%;
+            height: 100vh;
+            margin-top: 5rem;
+        }
+    }
+
+    & .panel-body .process-text {
+        font-size: 2rem;
+    }
+
+    & #process__btn {
+        color: #fff;
+        font-size: 1.5rem;
+        border-radius: 10rem;
+        padding: 0.5rem 1.2rem;
+    }
+    
+    & .process__btn-center {
+        display: flex;
+        justify-content: center;
+    }
+    
+    & #process__link { 
+        font-size: 1.5rem;
+        border-radius: 10rem;
+        padding: 0.5rem 1.2rem;
+    }
+} 

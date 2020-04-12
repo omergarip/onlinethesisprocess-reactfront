@@ -1,0 +1,117 @@
+.main-nav {
+    display: flex;
+    list-style: none;
+    margin-top: 5.5rem;
+    margin-right: 5rem;
+    
+    & li {
+        display: inline-block;
+        margin-left: 4rem;
+
+        & a:link,
+        & a:visited {
+            padding: 0.8rem 0;
+            color: #fff;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 1.8rem;
+            border-bottom: 0.2rem solid transparent;
+            -webkit-transition: border-bottom 0.2s;
+            transition: border-bottom 0.2s;
+        }
+
+        & a:hover,
+        & a:active {
+            border-bottom: 0.2rem solid #e67e22;
+        }
+    }
+
+    & #notification {
+        position: relative;
+         margin-top: -1.2rem;  
+    }
+
+    & h3 {
+        display:block;
+        color:#333; 
+        background:#FFF;
+        font-weight:bold;
+        font-size:13px;    
+        padding:8px;
+        margin:0;
+        border-bottom:solid 1px rgba(100, 100, 100, .30);
+    }
+
+    .seeAll {
+        background:rgb(4, 0, 7);
+        padding:8px;
+        font-size:12px;
+        font-weight:bold;
+        border-top:solid 1px rgba(100, 100, 100, .30);
+        text-align:center;
+    }
+}
+
+/* MOBILE NAV */
+
+.mobile-nav-icon {
+    float: right;
+    margin-top: 3rem;
+    cursor: pointer;
+    display: none;
+
+    & i {
+        font-size: 4rem;
+        color: #fff;
+    }
+}
+
+/* STICKY NAV */
+
+.sticky {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(2, 0, 0, 0.98);
+    box-shadow: 0 0.2rem 0.2rem #efefef;
+    z-index: 9999;
+    padding-bottom: 0.4rem;
+
+    & .main-nav {
+        margin-top: 2rem; 
+        
+        & li a:link,
+        & li a:visited {
+            padding: 1.6rem 0;
+            color: #fff;
+        }
+    }
+}
+
+
+.secondary_sticky {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(2, 0, 0, 0.98);
+    box-shadow: 0 0.2rem 0.2rem #efefef;
+    z-index: 9999;
+    padding-bottom: 0.4rem;
+
+    .main-nav {
+        margin-top: 2rem; 
+
+        & li a:link,
+        & li a:visited {
+            padding: 1.6rem 0;
+            color: #fff;
+        }
+    }
+
+    & .notification__icon {
+        position: relative;
+         margin-top: -1.2rem;  
+    }
+}

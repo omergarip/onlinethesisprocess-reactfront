@@ -1,0 +1,116 @@
+footer {
+    background-color: #333;
+    padding: 1rem;
+
+    & .col-md-6 {
+        display: flex;
+        align-items: center;
+
+        & .footer-nav {
+            list-style: none;
+            float: left;
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+    
+            & li {
+                display: inline-block;
+                margin-right: 2rem;
+                font-size: 2rem;
+                color: #fff;
+    
+                &:last-child { margin-right: 0; }
+    
+                & a:link,
+                & a:visited {
+                    text-decoration: none;
+                    border: 0;
+                    color: #888;
+                    -webkit-transition: color 0.2s;
+                    transition: color 0.2s;
+                }
+    
+                & a:hover,
+                & a:active {
+                    color: #ddd;
+                }
+            }
+        }
+
+        & .social-links {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+        
+            & li {
+                display: inline-block;
+                margin-right: 2rem;
+                font-size: 2rem;
+                color: #fff;
+        
+                &:last-child { margin-right: 0; }
+        
+                & a:link,
+                & a:visited {
+                    text-decoration: none;
+                    border: 0;
+                    color: #888;
+                    -webkit-transition: color 0.2s;
+                    transition: color 0.2s;
+                }
+        
+                & a:hover,
+                & a:active {
+                    font-size: 160%;
+                }
+            }
+
+            & .ion-logo-facebook,
+            & .ion-logo-twitter,
+            & .ion-logo-instagram {
+                -webkit-transition: color 0.2s;
+                transition: color 0.2s;
+            }
+        
+            & .ion-logo-facebook:hover {
+                color: #3b5998;
+            }
+            
+            & .ion-logo-twitter:hover {
+                color: #00aced;
+            }
+            
+            & .ion-logo-instagram:hover {
+                color: #dd4b39;
+            }
+        }
+    }
+
+    & p {
+        color: #fff;
+        text-align: center;
+        margin-top: 2rem;
+        font-size: 1.6rem;
+    }
+
+    & div:last-child {
+        justify-content: center;
+        margin-bottom: 0;
+    }
+}
+
+.footer-nav li,
+.social-links li {
+    display: inline-block;
+    margin-right: 2rem;
+    font-size: 2rem;
+    color: #fff;
+}
+
+
+
+.social-links li a:link,
+.social-links li a:visited {
+    font-size: 160%;
+}
+

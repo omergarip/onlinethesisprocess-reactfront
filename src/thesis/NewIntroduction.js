@@ -3,7 +3,6 @@ import { isAuthenticated } from '../auth';
 import { getIntroductionByProcessId, create } from './apiThesis';
 import { updateIntroduction, getProcess } from '../process/apiProcess';
 import { Redirect } from 'react-router-dom';
-import '../css/main.css';
 import CKEditor from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
@@ -15,7 +14,7 @@ class NewIntroduction extends Component {
 			introBody: '',
 			reference: '',
 			references: [],
-			introId : '',
+			introId: '',
 			error: '',
 			adviserId: '',
 			loading: false,
@@ -30,10 +29,10 @@ class NewIntroduction extends Component {
 			if (data.error) {
 				console.log(data.error);
 			} else {
-                this.setState({ 
-					process : data[0],				
-                    loading: false
-                });	
+				this.setState({
+					process: data[0],
+					loading: false
+				});
 			}
 		});
 	}
@@ -42,12 +41,12 @@ class NewIntroduction extends Component {
 		this.setState({ error: '' });
 		this.setState({
 			[name]: event.target.value
-		});			
+		});
 	};
 
 	handleEditorChange() {
-		return ( event, editor ) => {
-			this.setState( { introBody: editor.getData() } );
+		return (event, editor) => {
+			this.setState({ introBody: editor.getData() });
 		}
 	}
 
@@ -85,19 +84,19 @@ class NewIntroduction extends Component {
 						this.setState({ error: data.error });
 					} else {
 						const introductionId = data[0]._id
-						this.setState({ introId: data[0]})
+						this.setState({ introId: data[0] })
 						updateIntroduction(processId, introductionId, token).then(data => {
 							if (data.error) {
 								this.setState({ error: data.error });
 							} else {
 								this.setState({
 									loading: false,
-									redirectToProfile:  true
+									redirectToProfile: true
 								});
 							}
 						});
 					}
-				}); 
+				});
 			}
 		});
 	};
@@ -120,10 +119,10 @@ class NewIntroduction extends Component {
 			<div className="form-group">
 				<label className="text-muted">Body</label>
 				<CKEditor
-					editor={ ClassicEditor }
-					data={ introBody || ''}
-					onChange={this.handleEditorChange()}	
-                />	
+					editor={ClassicEditor}
+					data={introBody || ''}
+					onChange={this.handleEditorChange()}
+				/>
 			</div>
 			<ul class="list">
 				{this.state.references.map((reference, i) => (
@@ -145,15 +144,15 @@ class NewIntroduction extends Component {
 				/>
 			</div>
 			{
-				
-				<button 
-					onClick={this.clickSubmit} 
-					className="btn-purple" 
+
+				<button
+					onClick={this.clickSubmit}
+					className="btn-purple"
 					id="process__btn" >
-						Save and Close
+					Save and Close
 				</button>
 			}
-			
+
 		</form>
 	);
 
@@ -176,12 +175,12 @@ class NewIntroduction extends Component {
 						<h2>Loading...</h2>
 					</div>
 				) : (
-					''
-				)}
+						''
+					)}
 
 				{this.NewIntroduction(introTitle, introBody)}
 			</div>
-			
+
 		);
 	}
 }
