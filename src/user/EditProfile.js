@@ -1,8 +1,9 @@
-import React, { Component } from "react";
+import React, { Component, Profiler } from "react";
 import { isAuthenticated } from "../auth";
 import { read, update, updateUser } from "./apiUser";
 import { Redirect } from "react-router-dom";
 import DefaultProfile from "../images/avatar.png";
+import Loading from '../core/Loading'
 
 class EditProfile extends Component {
     constructor() {
@@ -13,6 +14,8 @@ class EditProfile extends Component {
             lname: "",
             email: "",
             password: "",
+            bannerId: '',
+            department: '',
             redirectToProfile: false,
             error: "",
             fileSize: 0,
@@ -33,7 +36,9 @@ class EditProfile extends Component {
                     lname: data.lname,
                     email: data.email,
                     error: "",
-                    areas: data.areas
+                    areas: data.areas,
+                    bannerId: data.bannerId,
+                    department: data.department
                 });
             }
         });
@@ -49,7 +54,7 @@ class EditProfile extends Component {
         const { fname, lname, email, password, fileSize } = this.state;
         if (fileSize > 1000000) {
             this.setState({
-                error: "File size should be less than 100kb",
+                error: "File size should be less than 1mb",
                 loading: false
             });
             return false;
@@ -97,10 +102,6 @@ class EditProfile extends Component {
             update(userId, token, this.userData).then(data => {
                 if (data.error) {
                     this.setState({ error: data.error });
-                } else if (isAuthenticated().user.role === "admin") {
-                    this.setState({
-                        redirectToProfile: true
-                    });
                 } else {
                     updateUser(data, () => {
                         this.setState({
@@ -124,7 +125,7 @@ class EditProfile extends Component {
                 />
             </div>
             <div className="form-group">
-                <label className="text-muted">Name</label>
+                <label className="text-muted">First Name</label>
                 <input
                     onChange={this.handleChange("fname")}
                     type="text"
@@ -133,7 +134,7 @@ class EditProfile extends Component {
                 />
             </div>
             <div className="form-group">
-                <label className="text-muted">Name</label>
+                <label className="text-muted">Last Name</label>
                 <input
                     onChange={this.handleChange("lname")}
                     type="text"
@@ -150,17 +151,19 @@ class EditProfile extends Component {
                     value={email}
                 />
             </div>
+            {
+                isAuthenticated().user.userType === 'faculty' ?
 
-            <div className="form-group">
-                <label className="text-muted">Area of Research Interest</label>
-                <textarea
-                    onChange={this.handleChange("areas")}
-                    type="text"
-                    className="form-control"
-                    value={areas}
-                />
-            </div>
-
+                    <div className="form-group">
+                        <label className="text-muted">Area of Research Interest</label>
+                        <textarea
+                            onChange={this.handleChange("areas")}
+                            type="text"
+                            className="form-control"
+                            value={areas}
+                        />
+                    </div> : ''
+            }
             <div className="form-group">
                 <label className="text-muted">Password</label>
                 <input
@@ -201,37 +204,37 @@ class EditProfile extends Component {
             : DefaultProfile;
 
         return (
-            <div className="container">
-                <h2 className="mt-5 mb-5">Edit Profile</h2>
-                <div
-                    className="alert alert-danger"
-                    style={{ display: error ? "" : "none" }}
-                >
-                    {error}
-                </div>
-
-                {loading ? (
-                    <div className="jumbotron text-center">
-                        <h2>Loading...</h2>
+            <section className="section__edit-profile">
+                <div className="container">
+                    <h2 className="mt-5 mb-5">Edit Profile</h2>
+                    <div
+                        className="alert alert-danger"
+                        style={{ display: error ? "" : "none" }}
+                    >
+                        {error}
                     </div>
-                ) : (
-                    ""
-                )}
 
-                <img
-                    style={{ height: "200px", width: "auto" }}
-                    className="img-thumbnail"
-                    src={photoUrl}
-                    onError={i => (i.target.src = `${DefaultProfile}`)}
-                    alt={fname}
-                />
+                    {loading ? (
+                        <Loading />
+                    ) : (
+                            ""
+                        )}
+                    <div className="profile-edit">
+                        <img
+                            className="img-thumbnail profile-edit__photo"
+                            src={photoUrl}
+                            onError={i => (i.target.src = `${DefaultProfile}`)}
+                            alt={fname}
+                        />
 
-                {isAuthenticated().user.role === "admin" &&
-                    this.signupForm(fname, lname, email, password, areas)}
 
-                {isAuthenticated().user._id === id &&
-                    this.signupForm(fname, lname, email, password, areas)}
-            </div>
+                        {isAuthenticated().user._id === id &&
+                            this.signupForm(fname, lname, email, password, areas)}
+
+                    </div>
+                </div>
+            </section>
+
         );
     }
 }

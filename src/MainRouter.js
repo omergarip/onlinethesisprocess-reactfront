@@ -20,14 +20,18 @@ import Researches from './research/Researches';
 import ShowResearch from './research/ShowResearch';
 import NewProcess from './process/NewProcess';
 import Processes from './process/Processes';
-import NewIntroduction from './thesis/NewIntroduction';
-import Introduction from './thesis/Introduction';
-import LiteratureReview from './thesis/LiteratureReview';
-import NewLiteratureReview from './thesis/NewLiteratureReview';
-import Methodology from './thesis/Methodology';
-import NewMethodology from './thesis/NewMethodology';
+import Chapters from './thesis/Chapters';
+import NewChapter from './thesis/NewChapter';
+import Chapter from './thesis/Chapter';
 import Committee from './committee/Committee';
+import CommitteeMember from './committee/CommitteeMember';
 import PrivateRoute from './auth/PrivateRoute';
+import CheckRevision from './thesis/CheckRevision';
+import ChapterApproval from './user/ChapterApproval';
+import Dashboard from './admin/Dashboard'
+import AdminUsers from './admin/AdminUsers'
+import PresentationPlace from './admin/PresentationPlace'
+
 
 
 const MainRouter = () => (
@@ -45,20 +49,23 @@ const MainRouter = () => (
             <PrivateRoute exact path="/research/:rId" component={ShowResearch} />
             <PrivateRoute exact path="/thesis-process/:pId/form" component={NewForm} />
             <PrivateRoute exact path="/thesis-process/:pId/form/:formId" component={Form} />
-            <PrivateRoute exact path="/thesis-process/:pId/introduction" component={NewIntroduction} />
-            <PrivateRoute exact path="/thesis-process/:pId/introduction/:introId" component={Introduction} />
-            <PrivateRoute exact path="/thesis-process/:pId/literature-review" component={NewLiteratureReview} />
-            <PrivateRoute exact path="/thesis-process/:pId/literature-review/:reviewId" component={LiteratureReview} />
-            <PrivateRoute exact path="/thesis-process/:pId/methodology" component={NewMethodology} />
-            <PrivateRoute exact path="/thesis-process/:pId/methodology/:metId" component={Methodology} />
+            <PrivateRoute exact path="/thesis-process/:pId/thesis/:thesisId/chapters" component={Chapters} />
+            <PrivateRoute exact path="/thesis-process/:pId/thesis/:thesisId/chapter/new" component={NewChapter} />
+            <PrivateRoute exact path="/thesis-process/:pId/thesis/:thesisId/chapter/:chapterId" component={Chapter} />
+            <PrivateRoute exact path="/thesis-process/:pId/thesis/:thesisId/chapter/:chapterId/revision" component={CheckRevision} />
             <PrivateRoute exact path="/user/:userId" component={Profile} />
             <PrivateRoute exact path="/user/:userId/request" component={RequestProfile} />
             <PrivateRoute exact path="/user/:userId/permission" component={PermissionProfile} />
+            <PrivateRoute exact path="/user/:userId/chapter-approval" component={ChapterApproval} />
             <PrivateRoute exact path="/user/:userId/thesis-approval" component={ThesisApproval} />
+            <PrivateRoute exact path="/user/:userId/faculty/committee-member" component={CommitteeMember} />
             <PrivateRoute exact path="/thesis-process" component={NewProcess} />
             <PrivateRoute exact path="/thesis-process/:pId" component={Processes} />
-            <PrivateRoute exact path="/thesis-process/:pId/committee-members/:cMemberId" component={Committee} />
+            <PrivateRoute exact path="/thesis-process/:pId/committee-members" component={Committee} />
             <PrivateRoute exact path="/user/edit/:userId" component={EditProfile} />
+            <PrivateRoute exact path="/user/:userId/dashboard" component={Dashboard} />
+            <PrivateRoute exact path="/user/:userId/dashboard/users" component={AdminUsers} />
+            <PrivateRoute exact path="/user/:userId/dashboard/presentation-place" component={PresentationPlace} />
         </Switch>
         <Footer />
     </div>

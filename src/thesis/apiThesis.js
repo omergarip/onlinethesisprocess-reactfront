@@ -30,9 +30,9 @@ export const getMethodologyByProcessId = (pId, token) => {
 		.catch(err => console.log(err));
 };
 
-export const getIntroductionByProcessId = (pId, token) => {
+export const getThesisByProcessId = (pId, token) => {
 	return window
-		.fetch(`${process.env.REACT_APP_API_URL}/thesis-process/${pId}/introduction`, {
+		.fetch(`${process.env.REACT_APP_API_URL}/thesis-process/${pId}/thesis`, {
 			method: 'GET',
 			headers: {
 				Accept: 'application/json',
@@ -46,9 +46,9 @@ export const getIntroductionByProcessId = (pId, token) => {
 		.catch(err => console.log(err));
 };
 
-export const getIntroductionByAdviserId = (userId, token) => {
+export const getThesisByAdviserId = (userId, token) => {
 	return window
-		.fetch(`${process.env.REACT_APP_API_URL}/user/${userId}/introduction`, {
+		.fetch(`${process.env.REACT_APP_API_URL}/user/${userId}/thesis`, {
 			method: 'GET',
 			headers: {
 				Accept: 'application/json',
@@ -62,9 +62,9 @@ export const getIntroductionByAdviserId = (userId, token) => {
 		.catch(err => console.log(err));
 };
 
-export const getIntroduction = (introId, token) => {
+export const getThesis = (thesisId, token) => {
 	return window
-		.fetch(`${process.env.REACT_APP_API_URL}/introduction/${introId}`, {
+		.fetch(`${process.env.REACT_APP_API_URL}/thesis/${thesisId}`, {
 			method: 'GET',
 			headers: {
 				Accept: 'application/json',
@@ -78,16 +78,49 @@ export const getIntroduction = (introId, token) => {
 		.catch(err => console.log(err));
 };
 
-export const create = (pId, token, introduction) => {
+export const getThesisByChapterId = (chapterId, token) => {
 	return window
-		.fetch(`${process.env.REACT_APP_API_URL}/thesis-process/${pId}/introduction`, {
+		.fetch(`${process.env.REACT_APP_API_URL}/chapter/${chapterId}`, {
+			method: 'GET',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			}
+		})
+		.then(response => {
+			return response.json();
+		})
+		.catch(err => console.log(err));
+};
+
+export const createThesis = (pId, token, thesis) => {
+	return window
+		.fetch(`${process.env.REACT_APP_API_URL}/thesis-process/${pId}/thesis`, {
 			method: 'POST',
 			headers: {
 				Accept: 'application/json',
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`
 			},
-			body: JSON.stringify(introduction)
+			body: JSON.stringify(thesis)
+		})
+		.then(response => {
+			return response.json();
+		})
+		.catch(err => console.log(err));
+};
+
+export const createChapter = (thesisId, token, chapters, references) => {
+	return window
+		.fetch(`${process.env.REACT_APP_API_URL}/thesis/${thesisId}`, {
+			method: 'POST',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			},
+			body: JSON.stringify({ chapters, thesisId, references })
 		})
 		.then(response => {
 			return response.json();
@@ -129,16 +162,16 @@ export const createMethodology = (pId, token, methodology) => {
 		.catch(err => console.log(err));
 };
 
-export const update = (introId, token, introduction) => {
+export const updateThesis = (thesisId, token, thesis) => {
 	return window
-		.fetch(`${process.env.REACT_APP_API_URL}/introduction/${introId}`, {
+		.fetch(`${process.env.REACT_APP_API_URL}/thesis/${thesisId}`, {
 			method: 'PUT',
 			headers: {
 				Accept: 'application/json',
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`
 			},
-			body: JSON.stringify(introduction)
+			body: JSON.stringify(thesis)
 		})
 		.then(response => {
 			return response.json();
@@ -146,85 +179,16 @@ export const update = (introId, token, introduction) => {
 		.catch(err => console.log(err));
 };
 
-export const updateReview = (reviewId, token, review) => {
+export const updateChapter = (thesisId, token, chapters, chapterId, references) => {
 	return window
-		.fetch(`${process.env.REACT_APP_API_URL}/literature-review/${reviewId}`, {
+		.fetch(`${process.env.REACT_APP_API_URL}/thesis/${thesisId}/chapter`, {
 			method: 'PUT',
 			headers: {
 				Accept: 'application/json',
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`
 			},
-			body: JSON.stringify(review)
-		})
-		.then(response => {
-			return response.json();
-		})
-		.catch(err => console.log(err));
-};
-
-export const updateMethodology = (metId, token, methodology) => {
-	return window
-		.fetch(`${process.env.REACT_APP_API_URL}/methodology${metId}`, {
-			method: 'PUT',
-			headers: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`
-			},
-			body: JSON.stringify(methodology)
-		})
-		.then(response => {
-			return response.json();
-		})
-		.catch(err => console.log(err));
-};
-
-
-export const updateIntroStatus = (introId, token, introduction) => {
-	return window
-		.fetch(`${process.env.REACT_APP_API_URL}/update-introduction/${introId}`, {
-			method: 'PUT',
-			headers: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`
-			},
-			body: JSON.stringify(introduction	)
-		})
-		.then(response => {
-			return response.json();
-		})
-		.catch(err => console.log(err));
-};
-
-export const updateReviewStatus = (reviewId, token, review) => {
-	return window
-		.fetch(`${process.env.REACT_APP_API_URL}/update-literature-review/${reviewId}`, {
-			method: 'PUT',
-			headers: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`
-			},
-			body: JSON.stringify(review)
-		})
-		.then(response => {
-			return response.json();
-		})
-		.catch(err => console.log(err));
-};
-
-export const updateMethodologyStatus = (metId, token, methodology) => {
-	return window
-		.fetch(`${process.env.REACT_APP_API_URL}/update-methodology/${metId}`, {
-			method: 'PUT',
-			headers: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`
-			},
-			body: JSON.stringify(methodology)
+			body: JSON.stringify({ chapters, thesisId, chapterId, references })
 		})
 		.then(response => {
 			return response.json();

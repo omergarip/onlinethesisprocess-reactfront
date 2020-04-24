@@ -100,22 +100,3 @@ $(document).ready(function () {
   });
 
 });
-
-$(document).ready(function () {
-
-  $('#notification-button').click(function () {
-
-    // TOGGLE (SHOW OR HIDE) NOTIFICATION WINDOW.
-    $('#notifications').fadeToggle('fast', 'linear', function () {
-
-    });
-
-    return false;
-  });
-
-  // HIDE NOTIFICATIONS WHEN CLICKED ANYWHERE ON THE PAGE.
-  $(document).click(function () {
-    $('#notifications').hide();
-  });
-
-});

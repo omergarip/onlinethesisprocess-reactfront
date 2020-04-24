@@ -4,7 +4,9 @@ import { list } from "./apiResearch";
 import { isAuthenticated } from "../auth";
 import Moment from 'react-moment';
 import { getPermissions, create, remove } from "../permission/apiPermission";
+import { createNotification, removeByUser } from '../notification/apiNotification'
 import { Link } from 'react-router-dom';
+import Loading from '../core/Loading'
 
 class Researches extends Component {
     constructor() {
@@ -14,6 +16,7 @@ class Researches extends Component {
             researches: [],
             permissions: [],
             deleted: false,
+            done: undefined
         };
     }
 
@@ -34,7 +37,10 @@ class Researches extends Component {
             if (data.error) {
                 console.log(data.error)
             } else {
-                this.setState({ researches: data.reverse() });
+                this.setState({
+                    researches: data.reverse(),
+                    done: true
+                });
             }
         });
 
@@ -58,10 +64,34 @@ class Researches extends Component {
         }
     }
 
+    createNotification = (notificationTo) => {
+        const token = isAuthenticated().token
+        const notificationFrom = isAuthenticated().user._id
+        const notification = `${isAuthenticated().user.fname} ${isAuthenticated().user.lname} requested to access your research topic. Please click here to respond.`
+        const redirect = `user/${notificationTo}/permission`
+        const notData = { notificationTo, notificationFrom, notification, redirect }
+        createNotification(token, notData).then(data => {
+            if (data.error) {
+                this.setState({ error: data.error });
+            }
+        });
+    }
+
+    deleteNotification = (notificationFrom) => {
+        const userId = isAuthenticated().user._id
+        const token = isAuthenticated().token
+        const notification = `${isAuthenticated().user.fname} ${isAuthenticated().user.lname} requested to access your research topic. Please click here to respond.`
+        const notData = { notificationFrom, notification }
+        removeByUser(userId, token, notData).then(err => {
+            if (err)
+                console.log(err)
+        })
+    }
+
 
     clickSubmit = event => {
         event.preventDefault();
-        this.setState({ loading: true });
+        this.setState({ done: undefined });
         const permissionFrom = isAuthenticated().user._id;
         const token = isAuthenticated().token;
         const permissionFor = event.target.id
@@ -74,15 +104,17 @@ class Researches extends Component {
                 this.setState({ error: data.error });
             } else {
                 this.setState({
-                    loading: false
+                    done: true,
                 })
             }
         });
+        this.createNotification(permissionTo)
+
     };
 
     cancelPermission = event => {
         event.preventDefault();
-        this.setState({ loading: true });
+        this.setState({ done: undefined });
         const permissionId = this.state.permissions[event.target.name]._id
         const token = isAuthenticated().token;
         remove(permissionId, token).then(data => {
@@ -90,11 +122,12 @@ class Researches extends Component {
                 this.setState({ error: data.error });
             } else {
                 this.setState({
-                    loading: false,
+                    done: true,
                     permissions: []
                 })
             }
         });
+        this.deleteNotification(isAuthenticated().user._id)
     };
 
     renderPosts = (recentResearches) => (
@@ -191,23 +224,27 @@ class Researches extends Component {
     )
 
     render() {
-        const { researches } = this.state;
+        const { researches, done } = this.state;
         return (
             <>
-                <section className="section__researches ">
-                    <div className="container">
-                        {isAuthenticated() && isAuthenticated().user.userType !== 'student' ?
-                            <Link to={`/research/create`} className="btn btn-primary"><i className="fas fa-plus"></i> Publish a Research Topic</Link> :
-                            ''
-                        }
-                        <div className="researchers__header">
-                            <h2>Recent Research Topics</h2>
-                        </div>
-                        {this.renderPosts(researches)}
+                {
+                    !done ?
+                        <Loading />
+                        :
+                        <section className="section__researches ">
+                            <div className="container">
+                                {isAuthenticated() && isAuthenticated().user.userType !== 'student' ?
+                                    <Link to={`/research/create`} className="btn btn-primary"><i className="fas fa-plus"></i> Publish a Research/Thesis/Dissertation Topic</Link> :
+                                    ''
+                                }
+                                <div className="researchers__header">
+                                    <h2>Recent Research/Thesis/Dissertation Topics</h2>
+                                </div>
+                                {this.renderPosts(researches)}
 
-                    </div>
-                </section>
-
+                            </div>
+                        </section>
+                }
 
             </>
         );

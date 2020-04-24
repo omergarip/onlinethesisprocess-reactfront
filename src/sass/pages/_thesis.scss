@@ -14,3 +14,18 @@
         margin: 8.55rem auto;
     }
 }
+
+.process__page{ 
+    & .thesis_border{
+        border-left: $mainOrange 2px solid;
+    }
+
+    & .col-md-6 {
+        margin-top: .2rem;
+    }
+
+    & .btn {
+        font-size: 1.7rem;
+        margin-bottom: 1rem;
+    }
+}

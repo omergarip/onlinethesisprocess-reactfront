@@ -1,18 +1,23 @@
 import React, { Component } from 'react';
 import { getResearch } from './apiResearch';
-import { getProcessByUserId, updateProcess } from '../process/apiProcess';
+import { getProcessByUserId, updateProcess, createProcess } from '../process/apiProcess';
+import { getPermissions, remove } from '../permission/apiPermission'
 import { isAuthenticated } from '../auth';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
+import Loading from '../core/Loading';
 
 class ShowResearch extends Component {
 	constructor() {
 		super();
 		this.state = {
-			loading: false,
+			done: undefined,
 			research: '',
 			createdBy: '',
 			processData: [],
-			studentId: ''
+			studentId: '',
+			newProcess: true,
+			permissions: [],
+			haveAccess: 0
 		};
 	}
 
@@ -20,6 +25,16 @@ class ShowResearch extends Component {
 		const userId = isAuthenticated().user._id;
 		const token = isAuthenticated().token;
 		const researchId = this.props.match.params.rId;
+		getPermissions(userId, token).then(data => {
+			if (data.error)
+				console.log(data.error)
+			else {
+				this.setState({
+					permissions: data,
+					haveAccess: data.length
+				})
+			}
+		})
 		getProcessByUserId(userId, token).then(data => {
 			if (data.error) {
 				console.log(data.error);
@@ -31,7 +46,7 @@ class ShowResearch extends Component {
 						processData: data[0],
 						studentId: data[0].studentId._id,
 						newProcess: false,
-						loading: false
+						done: true
 					});
 				}
 			}
@@ -52,7 +67,7 @@ class ShowResearch extends Component {
 	componentDidUpdate(prevProps, prevState, snapshot) {
 		const userId = isAuthenticated().user._id;
 		const token = isAuthenticated().token;
-		if (this.state.studentProcess !== prevState.studentProcess) {
+		if (this.state.done !== prevState.done) {
 			getProcessByUserId(userId, token).then(data => {
 				if (data.error) {
 					console.log(data.error);
@@ -64,7 +79,7 @@ class ShowResearch extends Component {
 							processData: data[0],
 							studentId: data[0].studentId._id,
 							newProcess: false,
-							loading: false
+							done: true
 						});
 					}
 				}
@@ -77,20 +92,53 @@ class ShowResearch extends Component {
 		this.setState({ loading: true });
 		const pId = this.state.processData._id;
 		const rId = this.props.match.params.rId;
-		const token = isAuthenticated().token;
-		updateProcess(pId, rId, token)
-			.then(data => {
-				if (data.error)
-					console.log(data.error);
+		if (pId !== undefined) {
+			const token = isAuthenticated().token;
+			updateProcess(pId, rId, token)
+				.then(data => {
+					if (data.error)
+						console.log(data.error);
+					else
+						this.setState({ newProcess: false });
+				});
+		} else {
+			const studentId = isAuthenticated().user._id;
+			const token = isAuthenticated().token;
+			const topicId = this.props.match.params.rId;
+			const process = { studentId, topicId }
+			createProcess(studentId, token, process).then(data => {
+				if (data.error) console.log(data.error);
 				else
-					this.setState({ newProcess: false });
+					this.setState({
+						done: true,
+						newProcess: false
+					});
 			});
-
+		}
 	};
+
+	dontSelect = event => {
+		event.preventDefault();
+		this.setState({ done: undefined });
+		const userId = isAuthenticated().user._id;
+		const token = isAuthenticated().token;
+		getPermissions(userId, token).then(data => {
+			if (data.error)
+				console.log(data.error)
+			else {
+				remove(data[0]._id, token)
+				this.setState({
+					done: true,
+					haveAccess: undefined
+				})
+			}
+		})
+
+	}
 
 	renderPosts = (research, createdBy) => (
 		<div className="row">
-			<div className="card mt-5">
+			<div className="card">
 				<h5 class="card-header">{research.title}</h5>
 				<div class="card-body">
 					<p class="card-text">{research.body}</p>
@@ -122,7 +170,7 @@ class ShowResearch extends Component {
 							<button onClick={this.clickSubmit} className="btn btn-info mt-1">
 								Select This Topic
 							</button>
-							<button onClick={this.clickSubmit} className="btn btn-danger mt-1">
+							<button onClick={this.dontSelect} className="btn btn-danger mt-1">
 								Do Not Select This Topic
 							</button>
 						</>
@@ -130,9 +178,17 @@ class ShowResearch extends Component {
 						isAuthenticated().user.userType === 'student' &&
 							this.state.studentId === isAuthenticated().user._id &&
 							this.state.processData.topicId === undefined ? (
-								<button onClick={this.clickSubmit} className="btn btn-info">
-									Select This Topic
-								</button>
+								<>
+									<div className="form-group">
+										<button onClick={this.clickSubmit} className="btn btn-info form-control">
+											Select This Topic
+										</button>
+										<button onClick={this.dontSelect} className="btn btn-danger form-control">
+											Do Not Select This Topic
+										</button>
+									</div>
+
+								</>
 							) : (
 								<div>
 									<p className="text-primary">
@@ -154,14 +210,14 @@ class ShowResearch extends Component {
 		</div>
 	);
 	render() {
-		const { research, createdBy, loading } = this.state;
+		const { research, createdBy, done, haveAccess } = this.state;
 
+		if (haveAccess === undefined)
+			return <Redirect to={'/researches'} />
 		return (
 			<>
-				{loading ? (
-					<div className="jumbotron text-center loading__screen">
-						<h2>Loading...</h2>
-					</div>
+				{!research ? (
+					<Loading done={done} />
 				) :
 					<section className="section__researches ">
 						<div className="container">

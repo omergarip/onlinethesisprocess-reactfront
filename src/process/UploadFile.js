@@ -4,7 +4,7 @@ import { isAuthenticated } from '../auth';
 import { getProcessByUserId, updateCommitteeStatus, } from './apiProcess';
 import { createCommittee, getCommitteeByStudentId, updateDate } from '../committee/apiCommittee'
 
-class FormCommittee extends Component {
+class UploadFile extends Component {
     constructor() {
         super();
         this.state = {
@@ -148,12 +148,12 @@ class FormCommittee extends Component {
 
         return (
             <>
-                {process.topicId && process.adviserId && process.formId ?
+                {process.topicId && process.adviserId && process.formId && process.committeeId ?
                     <div className={
                         this.state.active ? 'accordion-item active' : 'accordion-item'
                     }>
                         <button className={process.committeeId ? 'done title' : 'title'} onClick={() => this.setState({ active: !this.state.active })}>
-                            Form Your Committee {process.committeeId ? <span class="checkmark">&#10003;</span> : ''}
+                            Upload Your Final Thesis/Dissertation Document {process.committeeId ? <span class="checkmark">&#10003;</span> : ''}
                         </button>
                         <div className="panel">
                             {newCommitee ?
@@ -209,4 +209,4 @@ class FormCommittee extends Component {
     }
 };
 
-export default FormCommittee;
+export default UploadFile;

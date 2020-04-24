@@ -53,9 +53,7 @@ export const authenticate = (jwt, next) => {
 	}
 };
 
-export const signout = next => {
-	if (typeof window !== 'undefined') window.localStorage.removeItem('jwt');
-	next();
+export const signout = () => {
 	return window
 		.fetch('${process.env.REACT_APP_API_URL}/signout', {
 			method: 'GET'

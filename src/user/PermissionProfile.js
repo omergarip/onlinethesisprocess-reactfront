@@ -3,6 +3,7 @@ import { isAuthenticated } from '../auth';
 import { Redirect, Link } from "react-router-dom";
 import { getPermissionsByUser, accept, reject } from "../permission/apiPermission";
 import { read } from "./apiUser";
+import { createNotification } from '../notification/apiNotification'
 import DefaultProfile from '../images/avatar.png';
 
 class PermissionProfile extends Component {
@@ -56,6 +57,18 @@ class PermissionProfile extends Component {
         }
     }
 
+
+    createNotification = (notificationTo, notification, redirect) => {
+        const token = isAuthenticated().token
+        const notificationFrom = isAuthenticated().user._id
+        const notData = { notificationTo, notificationFrom, notification, redirect }
+        createNotification(token, notData).then(data => {
+            if (data.error) {
+                this.setState({ error: data.error });
+            }
+        });
+    }
+
     acceptPermission = event => {
         event.preventDefault();
         this.setState({
@@ -63,6 +76,11 @@ class PermissionProfile extends Component {
         });
         this.state.permissions[event.target.id].status = 'Accepted'
         this.forceUpdate()
+        const researchId = this.state.permissions[0].permissionFor._id
+        const title = this.state.permissions[0].permissionFor.title
+        const notificationTo = this.state.permissions[0].permissionFrom
+        const notification = `${isAuthenticated().user.fname} ${isAuthenticated().user.lname} accepted your requested to access to ${title}. Please click here to access it.`
+        const redirect = `/research/${researchId}`
         const permissionId = this.state.permissions[event.target.id]._id;
         const token = isAuthenticated().token;
         const permission = this.state.permissions[event.target.id]
@@ -73,6 +91,7 @@ class PermissionProfile extends Component {
                 this.setState({
                     loading: false
                 })
+                this.createNotification(notificationTo, notification, redirect)
             }
         });
     };
@@ -82,6 +101,10 @@ class PermissionProfile extends Component {
         this.setState({
             loading: true
         });
+        const notificationTo = this.state.permissions[0].permissionFrom
+        const title = this.state.permissions[0].permissionFor.title
+        const notification = `${isAuthenticated().user.fname} ${isAuthenticated().user.lname} rejected your requested to access to ${title}. Please click here to find another research topic.`
+        const redirect = '/researches'
         const permissionId = this.state.permissions[event.target.id]._id;
         const token = isAuthenticated().token;
         reject(permissionId, token).then(data => {
@@ -91,6 +114,7 @@ class PermissionProfile extends Component {
                 this.setState({
                     loading: false
                 })
+                this.createNotification(notificationTo, notification, redirect)
             }
         });
     };
@@ -106,7 +130,7 @@ class PermissionProfile extends Component {
 
         return (
 
-            <section>
+            <section className='section__permission'>
                 <div class="sidebar" data-color="red">
                     <div class="logo">
                         <img src={photoUrl} className="rounded-circle" />

@@ -1,0 +1,136 @@
+.section__dashboard {
+    margin:0;
+
+
+    & #notifications-list {
+
+        margin-bottom: 4rem;
+        border-bottom: $mainOrange 2px solid;
+
+        &__btn {
+            font-size: 2rem;
+        }
+    }
+
+
+    & h2 {
+        font-size: 4.8rem;
+        word-spacing: 0.2rem;
+        text-align: center;
+        margin-bottom: 6rem;
+        letter-spacing: 0.1rem;
+    
+        &:after {
+            display: block;
+            height: 0.2rem;
+            background-color: #e67e22;
+            content: " ";
+            width: 20%;
+            margin: 0 auto;
+            margin-top: 2rem;
+        }
+    }
+
+    & .content {
+        display: flex;
+        height: 100vh;
+    }
+
+    & .main-content {
+        flex: 1;
+        margin: 10rem 0 20rem 0;
+
+        & input {
+            font-size: 1.7rem;
+        }
+
+        & .dashboard__tabs {
+            font-size: 2rem;
+        }
+
+        & .tab-pane {
+            font-size: 2rem;
+        }
+
+        & .admin-users__photo {
+            width: 5rem; 
+            height: 5rem;
+            border-radius: .2rem;
+        }
+
+        & .btn {
+            font-size: 1.7rem;
+        }
+    }
+
+    & .dashboard__sidebar {
+        flex: 0 0 3.5%;
+        height: 100%;
+        background:$colorprimary-dark;
+        overflow: hidden;
+        transition: .5s;
+    
+        &:hover {
+            flex: 0 0 12%;
+    
+    
+            & .menu ul li span {
+                padding: 4rem 2rem;
+                opacity: 1;
+                pointer-events: visible;
+            }
+        }
+    
+        & .menu {
+            display: flex;
+            width: 8rem;
+            height: 100%;
+            background: $colorprimary-dark;
+            color: #f2f2f2;
+    
+            &-logo {
+                font-size: 1.7rem;
+                margin-top: 2rem;
+            }
+    
+            & .fa-bell {
+                margin:0;
+            }
+    
+            & ul li {
+                display: flex;
+                padding: 0 2rem;
+                cursor: pointer;
+                
+                &.active i,
+                &.active span  {color: $color-secondary-light!important;}
+                
+                &:hover i {color: $color-secondary-light!important;}
+                &:hover span {
+                    margin-left: 2rem;
+                    color: $color-secondary-light!important;
+
+                }
+    
+                & i {
+                    font-size: 3.5rem;
+                    padding: 4rem 0 2rem 0!important;
+                    color: #ececec;
+                }
+    
+                & span {
+                    position: absolute;
+                    color: #ececec;
+                    letter-spacing: .1rem;
+                    padding: 4rem 0 4rem 0;
+                    opacity: 0;
+                    pointer-events: none;
+                    font-size: 2.5rem;
+                    transition: .8s;
+                }
+            }
+        }
+    }
+    
+}
+ 

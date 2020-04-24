@@ -4,84 +4,78 @@ import { isAuthenticated } from '../auth';
 import { getProcessByUserId } from './apiProcess';
 
 class SelectAdviser extends Component {
-	constructor() {
-		super();
-		this.state = {
-			process: [],
-			loading: false,
-		};
-	}
+    constructor() {
+        super();
+        this.state = {
+            process: [],
+            loading: false,
+        };
+    }
 
-	componentDidMount() {
-		const userId = isAuthenticated().user._id;
+    componentDidMount() {
+        const userId = isAuthenticated().user._id;
         const token = isAuthenticated().token;
         getProcessByUserId(userId, token).then(data => {
-			if (data.error) {
-				console.log(data.error);
-			} else {
-                this.setState({ 
-                    process : data[0],
+            if (data.error) {
+                console.log(data.error);
+            } else {
+                this.setState({
+                    process: data[0],
                     loading: false
-                });	
-			}
-		});
-	}
+                });
+                console.log(data[0].adviserId)
+            }
+        });
+    }
 
-	render() {
-		const { process } = this.state;
+    render() {
+        const { process } = this.state;
 
-		return (
+        return (
             <>
-                {  process.topicId !== undefined ? (	
-                    <div>	
-                        <div class="panel-heading mt-4" role="tab" id="headingOne">
-                            <h4 class="panel-title">
-                                <a className={ process.adviserId !== undefined  ? "collapsed status" : "collapsed"} role="button" data-toggle="collapse" 
-                                data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                                    Select Adviser { process.adviserId !== undefined  ? <span class="checkmark">&#10003;</span> : ''}
-                                </a>
-                            </h4>
-                        </div>
-                        <div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-                            <div class="panel-body">
-                                {
-                                    process.adviserId === undefined ? 
-                                    <div>
-                                        <p className="lead process-text text-center">
-                                            Now, You can select your adviser.
-                                        </p>
-                                        <p className="lead process-text text-center">
-                                            Click button to find your adviser.
-                                        </p>
-                                        <div className="process__btn-center">
-                                            <Link
-                                                to={`/faculty-members`}
-                                                className="btn-purple" id="process__btn">
-                                                    Select Adviser.
-                                            </Link>
-                                        </div>
-                                    </div> : 
-                                    <div>
-                                        <p className="lead process-text text-center">
-                                            You have selected your adviser.
-                                        </p>
-                                        <div className="d-flex justify-content-center">
-                                            <Link
-                                                id="process__link"
-                                                to={`/user/${process.adviserId._id}`}
-                                            >
-                                                    {process.adviserId.fname} {process.adviserId.lname}
-                                            </Link>
-                                        </div>
+                {process.topicId ?
+                    <div class={
+                        this.state.active ? 'accordion-item active' : 'accordion-item'
+
+                    }>
+                        <button className={process.adviserId !== undefined ? 'done title' : 'title'} onClick={() => this.setState({ active: !this.state.active })}>
+                            Select Advisor {process.adviserId !== undefined ? <span class="checkmark">&#10003;</span> : ''}
+                        </button>
+                        <div className="panel">
+                            {process.adviserId === undefined ?
+                                <>
+                                    <p className="lead process-text text-center">
+                                        Now, You can select your advisor.
+                                    </p>
+                                    <p className="lead process-text text-center">
+                                        Click button to find your advisor.
+                                    </p>
+                                    <div className="process__btn-center">
+                                        <Link
+                                            to={`/faculty-members`} className="btn-purple" id="process__btn"	>
+                                            Select Advisor
+                                    </Link>
                                     </div>
-                                } 		
-                            </div>
+                                </>
+                                : <div>
+                                    <p className="lead process-text text-center">
+                                        You have selected your advisor.
+                                    </p>
+                                    <div className="d-flex justify-content-center">
+                                        <Link
+                                            id="process__link"
+                                            to={`/user/${process.adviserId._id}`}
+                                        >
+                                            {process.adviserId.fname} {process.adviserId.lname}
+                                        </Link>
+                                    </div>
+                                </div>}
                         </div>
-                    </div>
-                ): ''
-            } 
-			</>
-		);
+                    </div> : null
+                }
+
+            </>
+        );
     }
 };
 

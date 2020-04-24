@@ -11,15 +11,20 @@
 @import 'layouts/_navbar';
 @import 'layouts/_sidebar';
 
+@import 'modules/_accordion';
 @import 'modules/_notification';
 @import 'modules/_large-hero';
+@import 'modules/_loading';
 @import 'modules/_btn';
 
 @import 'pages/_committee-members';
+@import 'pages/_dashboard';
 @import 'pages/_faculty-members';
 @import 'pages/_form';
 @import 'pages/_home';
 @import 'pages/_process';
 @import 'pages/_profile';
 @import 'pages/_researches';
+@import 'pages/_signin';
 @import 'pages/_thesis';
+@import 'pages/_thesis-chapters';

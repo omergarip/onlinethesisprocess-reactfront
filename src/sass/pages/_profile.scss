@@ -141,3 +141,32 @@
 #signup-button {
     margin-top: 0;
   }
+
+
+.section__edit-profile {
+  display: flex;
+  flex-direction: column;
+  margin: 5rem 0;
+  font-size: 2rem;
+
+  & .profile-edit {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  & form {
+    width: 90%;
+  }
+
+  & .profile-photo{
+    height: 20rem;
+  }
+
+  & input,
+  & button {
+    font-size: 2rem;
+  }
+
+}

@@ -2,17 +2,6 @@
 
 
 
-#cancelPermission {
-    text-decoration: underline;
-    color: blue;
-    cursor: pointer;
-	font-size: 1.25rem;
-	text-align: center;
-}
-
-.ck-content {
-    height: 550px;
-}
 
 
  
@@ -24,71 +13,5 @@ body {
 
 /*****************************FORM STYLES*****************************/
 
-.citationForm {
-	width: 100rem;
-	margin: 2rem 2rem ;
-}
 
-
-
-#todoInput {
-	width: 100%;
-	height: 4rem;
-	background: none;
-	border: none;
-	border-bottom: 0.1rem solid #34495e;
-	outline: none;
-	font: 300 2rem 'Ubuntu', sans-serif;
-	color: #34495e;
-}
-
-/*****************************LIST STYLES*****************************/
-
-.task {
-	width: 100%;
-	line-height: 3rem;
-	padding: 0 2rem;
-	color: #34495e;
-	transition: all .3s ease;
-}
-.task:hover {
-	background: rgba(0, 0, 0, .02);
-	cursor: pointer;
-}
-
-.task:hover span{
-	opacity: 1;
-}
-
-.done {
-	text-decoration: line-through;
-	color: #bdc3c7;
-}
-
-.task span {
-  float: right;
-  color: #c0392b;
-  transition: all 0.3s;
-  opacity: 0;
-}
-
-.task span:hover {
-  color: #e74c3c
-}
-
-::-webkit-input-placeholder {
-    color:#34495e;
-}
-
-::-moz-placeholder {
-    color:#34495e;
-}
-
-::-ms-placeholder {
-    color:#34495e;
-}
-
-::placeholder {
-    color: #34495e;
-}
 

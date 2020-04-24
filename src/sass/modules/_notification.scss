@@ -1,40 +1,8 @@
-#notifications {
-    display: flex;
-    flex-direction: column;
-    display:none;
-    width:43rem;
-    position:absolute;
-    top:5rem;
-    left:-25rem;
-    background:#FFF;
-    border:solid 1px rgba(100, 100, 100, .20);
-    -webkit-box-shadow:0 3px 8px rgba(0, 0, 0, .20);
-    z-index: 100;
+#notification {
 
-    &-header {
-        display: flex;
-        justify-content: space-around;
-        border-bottom:solid 1px rgba(100, 100, 100, .30);
-        
-        &__btn {
-            border: none;
-            background-color: inherit;
-            padding: 1rem 1.5rem;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: blue;
-
-            &:hover {
-                background-color: $color-grey-light-4;
-            }
-        }
-
-        & h3 {
-            border-bottom: 0;
-            font-size: 1.5rem;
-        }
+    & .modal-body {
+        padding: 0;
     }
-
     & ul {
         border-bottom: 1px solid red;
     }
@@ -42,29 +10,28 @@
     & .read {
             background-color: $color-grey-light-4;
     }
-
-    &::before {         
-        content: '';
-        display:block;
-        width:0;
-        height:0;
-        color:transparent;
-        border:10px solid #CCC;
-        border-color:transparent transparent #FFF;
-        margin-top:-2rem;
-        margin-left:25.5rem;
-    }
 }
 
+
+
 #notifications-list {
-    
- 
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin: 0 .5rem;
     width: 95%;
 
     &::after {
         border-top: 1px solid red;
     }
+
+    & img {
+        width: 5rem; 
+        height: 5rem;
+        border-radius: 50%;
+    }
+
     
     &__btn {
         width: 100%;

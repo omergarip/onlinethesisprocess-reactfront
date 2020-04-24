@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { isAuthenticated } from '../auth';
 import { getProcessByUserId, createProcess } from './apiProcess';
 import workflow from '../images/workflow.jpg';
+import Loading from '../core/Loading';
 
 class newProcess extends Component {
 	constructor() {
@@ -67,9 +68,10 @@ class newProcess extends Component {
 		this.setState({
 			loading: true
 		});
-		const userId = isAuthenticated().user._id;
+		const studentId = isAuthenticated().user._id;
 		const token = isAuthenticated().token;
-		createProcess(userId, token).then(data => {
+		const process = { studentId }
+		createProcess(studentId, token, process).then(data => {
 			if (data.error) console.log(data.error);
 			else
 				this.setState({
@@ -82,15 +84,13 @@ class newProcess extends Component {
 	render() {
 		const { newProcess, processId, loading } = this.state;
 
-		if (!newProcess && !loading)
-			this.redirectToTarget(processId)
+		// if (!newProcess && !loading)
+		// 	this.redirectToTarget(processId)
 
 		return (
 			<>
 				{loading ? (
-					<div className="jumbotron text-center loading__screen">
-						<h2>Loading...</h2>
-					</div>
+					<Loading />
 				) :
 
 					<section className="section__process">
@@ -102,11 +102,11 @@ class newProcess extends Component {
 							<div className="col-md-8">
 								<div className="container jumbotron">
 									<h1 className="display-6 text-center" style={{ fontSize: "2.5rem" }}>
-										YSU Web-based Thesis Process Workflow Management System
+										YSU Web-based Thesis Workflow Management System
 									</h1>
 									<p className="lead">
 										This is the page that you can keep track of your thesis process. If you
-										are ready to start journey, please click button below!
+										are ready to start your journey, please click button below!
 									</p>
 									<div className="d-flex justify-content-center">
 										<button

@@ -4,7 +4,7 @@ import { listFaculty } from '../user/apiUser';
 import { list } from "../research/apiResearch";
 import { getPermissions, create, remove } from "../permission/apiPermission";
 import Moment from 'react-moment';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import DefaultProfile from '../images/avatar.png';
 import 'animate.css'
 
@@ -213,14 +213,17 @@ class Home extends Component {
         const recentResearches = researches.slice(-2);
         return (
             <>
-                {
+                {isAuthenticated() && isAuthenticated().user.userType === 'admin' ?
+                    <Redirect
+                        to={`/user/${isAuthenticated().user._id}/dashboard`}
+                    /> :
                     loading ?
                         <Loading />
                         :
                         <>
                             <section className="section__researches js--section-researches" id="research-topics">
                                 <div className="researchers__header">
-                                    <h2>Recent Research Topics</h2>
+                                    <h2>Recent Research/Thesis/Dissertation Topics</h2>
                                 </div>
                                 {this.renderPosts(recentResearches)}
                                 <div className="discover__more">
@@ -253,19 +256,23 @@ class Home extends Component {
                                 </div>
                                 <div className="info">
                                     <blockquote>
-                                        Web-based Thesis Process Workflow Management System is an application that constructs bridge between students and faculty members virtually.
+                                        Web-based Thesis Workflow Management System is a web-based application that constructs bridge between students and faculty members virtually.
                                         Thanks to this project, you as a student will search many research topics in a single page. Whenver you find the topic which fits best for you,
                                         you will be able to contact with faculty member who publishes the topic that you are interested in. On the other hand, Faculty Members will be
                                         able to find ambitious students who are interested in their research area. If you want to join this community, do not wait any longer. Click
                                         the button below to sign up!
                             </blockquote>
-                                    <div className="info__btn">
-                                        <Link
-                                            to="/signup"
-                                            className="btn-purple">
-                                            Sign Up
-                                </Link>
-                                    </div>
+                                    {
+                                        !isAuthenticated() ?
+                                            <div className="info__btn">
+                                                <Link
+                                                    to="/signup"
+                                                    className="btn-purple">
+                                                    Sign Up
+                                            </Link>
+                                            </div> : null
+                                    }
+
                                 </div>
                             </section>
                         </>

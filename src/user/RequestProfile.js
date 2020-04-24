@@ -4,6 +4,7 @@ import { Redirect, Link } from "react-router-dom";
 import { getRequestsByUser, accept, remove } from "../adviser/apiAdviser";
 import { getProcessByUserId, updateAdviser } from '../process/apiProcess'
 import DefaultProfile from '../images/avatar.png';
+import { createNotification } from '../notification/apiNotification'
 
 
 class RequestProfile extends Component {
@@ -40,6 +41,7 @@ class RequestProfile extends Component {
                                     this.setState({
                                         process: data[0]
                                     });
+                                    console.log(data)
                                 }
 
                             }
@@ -69,6 +71,20 @@ class RequestProfile extends Component {
         }
     }
 
+    createNotification = (notificationTo, notification, redirect) => {
+        const token = isAuthenticated().token
+        const notificationFrom = isAuthenticated().user._id
+        const notData = { notificationTo, notificationFrom, notification, redirect }
+        createNotification(token, notData).then(data => {
+            if (data.error) {
+                this.setState({ error: data.error });
+            }
+        });
+    }
+
+
+
+
     acceptRequest = event => {
         event.preventDefault();
         this.setState({
@@ -77,6 +93,9 @@ class RequestProfile extends Component {
         this.state.requests[event.target.id].status = 'Accepted'
         this.forceUpdate()
         const requestId = this.state.requests[event.target.id]._id;
+        const notificationTo = this.state.requests[0].requestedFrom
+        const notification = `${isAuthenticated().user.fname} ${isAuthenticated().user.lname} accepted your advisee request. Please click here to continue your process`
+        const redirect = `/thesis-process/${this.state.process._id}`
         const token = isAuthenticated().token;
         const request = this.state.requests[event.target.id]
         accept(requestId, token, request).then(data => {
@@ -86,6 +105,7 @@ class RequestProfile extends Component {
                 this.setState({
                     loading: false
                 })
+                this.createNotification(notificationTo, notification, redirect)
             }
         });
         const userId = isAuthenticated().user._id
@@ -106,6 +126,9 @@ class RequestProfile extends Component {
         this.setState({
             loading: true
         });
+        const notificationTo = this.state.requests[0].requestedFrom
+        const notification = `${isAuthenticated().user.fname} ${isAuthenticated().user.lname} rejected your advisee request. Please click here to select another advisor`
+        const redirect = `/faculty-members`
         const requestId = this.state.requests[event.target.id]._id;
         const token = isAuthenticated().token;
         remove(requestId, token).then(data => {
@@ -115,10 +138,32 @@ class RequestProfile extends Component {
                 this.setState({
                     loading: false
                 })
+                this.createNotification(notificationTo, notification, redirect)
             }
         });
 
     };
+
+    openModal = (id, msg, info) => (
+        <div class="modal fade" id={id} tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">{msg}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        {info}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 
     render() {
         const { redirectToSignin, requests } = this.state
@@ -130,6 +175,7 @@ class RequestProfile extends Component {
             DefaultProfile
 
         return (
+
             <section>
                 <div class="sidebar" data-color="red">
                     <div class="logo">
@@ -186,8 +232,18 @@ class RequestProfile extends Component {
                                         <td>{request.requestedFrom.department}</td>
                                         <td>{request.requestedFrom.bannerId}</td>
                                         <td>{request.requestedFrom.email}</td>
-                                        <td>{request.introduction}</td>
-                                        <td>{request.message}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-primary"
+                                                data-toggle="modal" data-target="#introModal">
+                                                Introduction
+                                        </button>
+                                            {this.openModal('introModal', 'Introduction', request.introduction)}
+                                        </td>
+                                        <td><button type="button" class="btn btn-primary"
+                                            data-toggle="modal" data-target="#messageModal">
+                                            Message
+                                        </button>
+                                            {this.openModal('messageModal', 'Message', request.message)}</td>
                                         <td>
                                             <button
                                                 id={i}
@@ -195,14 +251,14 @@ class RequestProfile extends Component {
                                                 className="btn btn-success btn-sm mr-1"
                                             >
                                                 Accept
-                            </button>
+                                            </button>
                                             <button
                                                 id={i}
                                                 onClick={this.rejectRequest}
                                                 className="btn btn-danger btn-sm"
                                             >
                                                 Reject
-                            </button>
+                                            </button>
                                         </td>
                                     </tr> : ''
                             ))}
@@ -239,4 +295,4 @@ class RequestProfile extends Component {
     }
 }
 
-export default RequestProfile
+export default RequestProfile;

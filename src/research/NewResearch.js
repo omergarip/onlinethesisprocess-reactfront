@@ -30,9 +30,9 @@ class NewResearch extends Component {
         return true;
     };
 
-    handleChange = ( name ) => event => {
-        this.setState({ error: ""});
-        this.setState({ 
+    handleChange = (name) => event => {
+        this.setState({ error: "" });
+        this.setState({
             [name]: event.target.value
         });
     };
@@ -40,25 +40,25 @@ class NewResearch extends Component {
     clickSubmit = event => {
         event.preventDefault();
         this.setState({ loading: true });
-        
+
         if (this.isValid()) {
             const userId = isAuthenticated().user._id;
             const token = isAuthenticated().token;
             const { title, description, body } = this.state;
             const research = {
-                title, description, body 
+                title, description, body
             };
             create(userId, token, research).then(data => {
                 if (data.error) {
                     this.setState({ error: data.error });
                 } else {
-                    this.setState({ 
+                    this.setState({
                         loading: false,
                         title: '',
                         description: '',
                         body: '',
                         redirectToProfile: true
-                    })    
+                    })
                 }
             });
         }
@@ -72,7 +72,7 @@ class NewResearch extends Component {
                     onChange={this.handleChange("title")}
                     type="text"
                     className="form-control"
-                    value={ title }
+                    value={title}
                 />
             </div>
             <div className="form-group">
@@ -81,9 +81,9 @@ class NewResearch extends Component {
                     onChange={this.handleChange("description")}
                     type="text"
                     className="form-control"
-                    value={ description }
+                    value={description}
                 />
-                <small className="form-text text-muted"> 
+                <small className="form-text text-muted">
                     This information will be displayed by all users.
                 </small>
             </div>
@@ -93,9 +93,9 @@ class NewResearch extends Component {
                     onChange={this.handleChange("body")}
                     type="text"
                     className="form-control"
-                    value={ body }
+                    value={body}
                 />
-                <small className="form-text text-muted"> 
+                <small className="form-text text-muted">
                     This information will be displayed by only authenticated users.
                 </small>
             </div>
@@ -138,10 +138,10 @@ class NewResearch extends Component {
                         <h2>Loading...</h2>
                     </div>
                 ) : (
-                    ""
-                )}
+                        ""
+                    )}
 
-                { this.newResearchForm(title, description, body) }
+                {this.newResearchForm(title, description, body)}
             </div>
         );
     }

@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-import { signin, authenticate } from '../auth';
+import { signin, authenticate, isAuthenticated } from '../auth';
+import Home from '../core/Home'
+import Loading from '../core/Loading';
 
 class Signin extends Component {
     constructor() {
@@ -11,7 +13,6 @@ class Signin extends Component {
             lname: "",
             password: "",
             error: "",
-            redirectToReferer: false,
             loading: false
         }
     }
@@ -77,30 +78,38 @@ class Signin extends Component {
         </form>
     )
 
-    redirectToTarget = () => {
-        this.props.history.push('/')
-    }
-
     render() {
-        const { username, password, error, redirectToReferer, loading } = this.state;
+        const { username, password, error, loading } = this.state;
 
-        if (redirectToReferer) {
-            this.redirectToTarget()
-        }
         return (
-            <div className="container">
-                <div className="alert alert-danger mt-5" style={{ display: error ? "" : "none" }}>
-                    {error}
-                </div>
-                {loading ? (
-                    <div className="jumbotron text-center">
-                        <h2>Loading...</h2>
-                    </div>
-                ) : ("")}
-                <div className="d-flex justify-content-center h-100" id="formsignin">
-                    {this.signinForm(username, password)}
-                </div>
-            </div>
+            <>
+                {isAuthenticated() && isAuthenticated().user.userType === 'admin' ?
+                    <Redirect
+                        to={`/user/${isAuthenticated().user._id}/dashboard`}
+                    /> :
+                    isAuthenticated() && isAuthenticated().user.userType !== 'admin' ?
+                        <Redirect
+                            to='/'
+                        />
+                        :
+                        loading ?
+                            <Loading />
+                            :
+                            <section className="section__signin" >
+                                <div className="container">
+                                    <div className="alert alert-danger mt-5" style={{ display: error ? "" : "none" }}>
+                                        {error}
+                                    </div>
+
+                                    <div className="d-flex justify-content-center h-100" id="formsignin">
+                                        {this.signinForm(username, password)}
+                                    </div>
+                                </div>
+
+                            </section >
+                }
+            </>
+
 
         )
     }

@@ -3,6 +3,7 @@ import { isAuthenticated } from '../auth';
 import { Redirect, Link } from "react-router-dom";
 import { getAdviserByStudentId, create, remove } from "../adviser/apiAdviser";
 import { read } from "./apiUser";
+import { createNotification, removeByUser } from '../notification/apiNotification'
 import DefaultProfile from '../images/avatar.png';
 import Background from '../images/jones.jpg';
 import Logo from '../images/ylogo.png';
@@ -29,6 +30,15 @@ class Profile extends Component {
                     this.setState({ redirectToSignin: true });
                 } else {
                     this.setState({ user: data });
+                    if (data.photo !== undefined) {
+                        removeByUser(userId, token).then(err => {
+                            if (err) {
+                                console.log(err)
+                            } else {
+                                console.log('succesfully deleted')
+                            }
+                        })
+                    }
                 }
             });
 
@@ -81,6 +91,30 @@ class Profile extends Component {
         });
     };
 
+    createNotification = (notificationTo) => {
+        const token = isAuthenticated().token
+        const notificationFrom = isAuthenticated().user._id
+        const notification = `You received advisee request from ${isAuthenticated().user.fname} ${isAuthenticated().user.lname}. Please click here to respond.`
+        const redirect = `user/${notificationTo}/request`
+        const notData = { notificationTo, notificationFrom, notification, redirect }
+        createNotification(token, notData).then(data => {
+            if (data.error) {
+                this.setState({ error: data.error });
+            }
+        });
+    }
+
+    deleteNotification = (notificationFrom) => {
+        const userId = isAuthenticated().user._id
+        const token = isAuthenticated().token
+        const notification = `You received advisee request from ${isAuthenticated().user.fname} ${isAuthenticated().user.lname}. Please click here to respond.`
+        const notData = { notificationFrom, notification }
+        removeByUser(userId, token, notData).then(err => {
+            if (err)
+                console.log(err)
+        })
+    }
+
     sendRequest = event => {
         event.preventDefault();
         this.setState({
@@ -101,6 +135,7 @@ class Profile extends Component {
                 this.setState({
                     loading: false
                 })
+                this.createNotification(requestedTo)
             }
         });
     };
@@ -108,7 +143,7 @@ class Profile extends Component {
     cancelRequest = event => {
         event.preventDefault();
         this.setState({ loading: true });
-        const requestId = this.state.advisers[event.target.name]._id
+        const requestId = event.target.name
         const token = isAuthenticated().token;
         remove(requestId, token).then(data => {
             if (data.error) {
@@ -118,6 +153,7 @@ class Profile extends Component {
                     loading: false,
                     advisers: []
                 })
+                this.deleteNotification(isAuthenticated().user._id)
             }
         });
     };
@@ -135,7 +171,7 @@ class Profile extends Component {
             <section className='section__profile'>
                 <>
                     {
-                        user._id === isAuthenticated().user._id ?
+                        user._id === isAuthenticated().user._id && isAuthenticated().user.userType === 'faculty' ?
                             <div className="sidebar" data-color="red">
                                 <div className="logo">
                                     <img src={photoUrl} className="rounded-circle" alt={`${user.fname}  ${user.lname}`} />
@@ -157,7 +193,7 @@ class Profile extends Component {
                                         </li>
                                         <li>
                                             <Link to={`/user/${isAuthenticated().user._id}/request`}>
-                                                <p>Adviser Requests</p>
+                                                <p>Advisee Requests</p>
                                             </Link>
                                         </li>
                                         <li>
@@ -213,12 +249,12 @@ class Profile extends Component {
                                                     advisers.length === 0 ?
                                                         <div className="col-md-4 col-sm-6 col-xs-6 profile-header-section1 text-right pull-rigth">
                                                             <button
-                                                                data-toggle="modal" data-target="#exampleModal"
+                                                                data-toggle="modal" data-target="#exampleModal2"
                                                                 className="btn btn-primary btn-block"
                                                             >
                                                                 Send Request
                                                                         </button>
-                                                            <div className="modal fade" id="exampleModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                            <div className="modal fade" id="exampleModal2" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                                 <div className="modal-dialog modal-lg" role="document">
                                                                     <div className="modal-content">
                                                                         <div className="modal-header">
@@ -234,7 +270,7 @@ class Profile extends Component {
                                                                                     <textarea
                                                                                         onChange={this.handleChange("introduction")}
                                                                                         rows="10" type="text" className="form-control" id="recipient-name"
-                                                                                        placeholder="Please briefly explain your research topic">
+                                                                                        placeholder="Please briefly explain your research topic" required>
                                                                                     </textarea>
                                                                                 </div>
                                                                                 <div className="form-group">
@@ -271,6 +307,7 @@ class Profile extends Component {
                                                                             profile-header-section1 text-right pull-rigth"
                                                                     >
                                                                         <button
+
                                                                             onClick={this.clickSubmit}
                                                                             className="btn btn-warning btn-block disabled"
                                                                         >
@@ -279,7 +316,7 @@ class Profile extends Component {
                                                                         <button
                                                                             id="cancelPermission"
                                                                             onClick={this.cancelRequest}
-                                                                            name={advisers[0]}
+                                                                            name={advisers[0]._id}
                                                                         >
                                                                             Click here to cancel it
                                                                         </button>

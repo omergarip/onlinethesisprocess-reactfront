@@ -2,25 +2,26 @@ import React, { Component } from 'react';
 import { isAuthenticated } from '../auth';
 import { Redirect, Link } from "react-router-dom";
 import { getThesisByAdviserId, updateThesis, getThesisByChapterId } from "../thesis/apiThesis";
-import { updateThesisId } from '../process/apiProcess'
+import { getProcess } from '../process/apiProcess'
 import DefaultProfile from '../images/avatar.png';
 import Loading from '../core/Loading';
 
-class ThesisApproval extends Component {
+class ChapterApproval extends Component {
     constructor() {
         super()
         this.state = {
             redirectToBack: false,
             students: [],
             chapters: [],
-            done: undefined,
-            success: undefined
+            theses: '',
+            done: undefined
         }
     }
 
     componentDidMount() {
         const userId = isAuthenticated().user._id
         const token = isAuthenticated().token
+        let chaptersArray = []
         let theses = []
         let students = []
         getThesisByAdviserId(userId, token)
@@ -30,58 +31,26 @@ class ThesisApproval extends Component {
                 } else {
 
                     data.map((element, i) => {
-                        if (element.finalStatus === 'Sent') {
+                        element.chapters.forEach(a => {
+                            if (a.status === 'Sent') {
+                                chaptersArray.push(a)
+                                theses.push(data[i])
+                            }
 
-                            theses.push(data[i])
-                        }
-                        console.log(element.finalStatus)
+                        })
                         students.push(data[i].studentId)
                     })
-
                     console.log(data.studentId)
                 }
                 this.setState({
                     students,
+                    chapters: chaptersArray,
                     theses,
                     done: true
                 })
             });
 
     }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevState.success !== this.state.success) {
-            const userId = isAuthenticated().user._id
-            const token = isAuthenticated().token
-            let theses = []
-            let students = []
-            getThesisByAdviserId(userId, token)
-                .then(data => {
-                    if (data.error) {
-                        console.log(data.error)
-                    } else {
-
-                        data.map((element, i) => {
-                            if (element.finalStatus === 'Sent') {
-
-                                theses.push(data[i])
-                            }
-                            console.log(element.finalStatus)
-                            students.push(data[i].studentId)
-                        })
-
-                        console.log(data.studentId)
-                    }
-                    this.setState({
-                        students,
-                        theses,
-                        done: true
-                    })
-                });
-        }
-
-    }
-
 
 
 
@@ -98,45 +67,6 @@ class ThesisApproval extends Component {
                 this.setState({
                     loading: false,
                     redirectToProfile: true
-                });
-            }
-        });
-    };
-
-    acceptRequest = event => {
-        event.preventDefault();
-        const thesisId = event.target.id
-        const token = isAuthenticated().token
-        let finalStatus = 'Approved'
-        let isFinal = true;
-        const thesis = { isFinal, finalStatus }
-        updateThesis(thesisId, token, thesis)
-        const pId = event.target.name
-        updateThesisId(pId, thesisId, token).then(data => {
-            if (data.error) {
-                this.setState({ error: data.error });
-            } else {
-                this.setState({
-                    done: true,
-                    success: true
-                });
-            }
-        });
-    };
-
-    rejectRequest = event => {
-        event.preventDefault();
-        const thesisId = event.target.id
-        const token = isAuthenticated().token
-        let finalStatus = 'Not Sent'
-        const thesis = { finalStatus }
-        updateThesis(thesisId, token, thesis).then(data => {
-            if (data.error) {
-                this.setState({ error: data.error });
-            } else {
-                this.setState({
-                    done: true,
-                    success: true
                 });
             }
         });
@@ -174,7 +104,7 @@ class ThesisApproval extends Component {
         return (
             <>
                 {
-                    !theses ?
+                    !chapters ?
                         <Loading done={done} /> :
                         <section>
                             <div class="sidebar" data-color="red">
@@ -201,12 +131,12 @@ class ThesisApproval extends Component {
                                                 <p>Advisee Requests</p>
                                             </Link>
                                         </li>
-                                        <li className="">
+                                        <li className="active">
                                             <Link to={`/user/${isAuthenticated().user._id}/chapter-approval`}>
                                                 <p>Chapter Approval</p>
                                             </Link>
                                         </li>
-                                        <li className="active">
+                                        <li className="">
                                             <Link to={`/user/${isAuthenticated().user._id}/thesis-approval`}>
                                                 <p>Thesis Approval</p>
                                             </Link>
@@ -221,40 +151,25 @@ class ThesisApproval extends Component {
                                         <tr>
                                             <th>ID</th>
                                             <th>Student's Name</th>
-                                            <th>Thesis</th>
+                                            <th>Chapter</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {theses.map((thesis, i) => (
+                                        {chapters.map((chapter, i) => (
 
                                             <tr key={i}>
                                                 <td>{students[i].bannerId}</td>
                                                 <td>{`${students[i].fname} ${students[i].lname}`}</td>
-                                                <td><Link
-                                                    id="process__link"
-                                                    className="btn btn-warning"
-                                                    to={`/thesis-process/${theses[i].processId}/thesis/${theses[i]._id}/chapters`}
-                                                >
-                                                    View Thesis
-                                                </Link></td>
+                                                <td>{chapter.title}</td>
                                                 <td>
-                                                    <button
-                                                        name={theses[i].processId}
-                                                        id={theses[i]._id}
-                                                        onClick={this.acceptRequest}
-                                                        className="btn btn-success btn-sm mr-1"
+                                                    <Link
+                                                        id="process__link"
+                                                        className="btn btn-warning"
+                                                        to={`/thesis-process/${theses[i].processId}/thesis/${theses[i]._id}/chapter/${chapter._id}`}
                                                     >
-                                                        Accept
-                                                        </button>
-                                                    <button
-                                                        name={theses[i].processId}
-                                                        id={theses[i]._id}
-                                                        onClick={this.rejectRequest}
-                                                        className="btn btn-danger btn-sm"
-                                                    >
-                                                        Reject
-                                                    </button>
+                                                        Read and Modify
+                                                </Link>
                                                 </td>
                                             </tr>
 
@@ -272,4 +187,4 @@ class ThesisApproval extends Component {
     }
 }
 
-export default ThesisApproval
+export default ChapterApproval

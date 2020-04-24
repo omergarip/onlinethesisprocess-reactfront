@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { Link, withRouter, useHistory } from 'react-router-dom';
 import { isAuthenticated, signout } from '../auth';
 import { getProcessByUserId } from '../process/apiProcess'
-import { create, getNotificationsByUser, readNotification, getReadNotificationsByUser, readAllNotification } from '../notification/apiNotification'
+import { createNotification, getNotificationsByUser, readNotification, getReadNotificationsByUser, readAllNotification } from '../notification/apiNotification'
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.js';
@@ -21,9 +21,10 @@ class Menu extends Component {
             processId: "",
             notifications: [],
             counter: '',
-            loading: true,
+            done: undefined,
             notificationId: '',
-            error: ''
+            error: '',
+            userId: undefined
         };
     }
 
@@ -34,16 +35,12 @@ class Menu extends Component {
             getProcessByUserId(userId, token).then(data => {
                 if (data.error) {
                     console.log(data.error)
-
                 } else {
                     if (data.length !== 0) {
-                        console.log(data[0]._id)
                         this.setState({
-                            processId: data[0]._id,
-                            loading: false
+                            processId: data[0]._id
                         });
                     }
-
                 }
             });
             getNotificationsByUser(userId, token).then(data => {
@@ -51,8 +48,7 @@ class Menu extends Component {
                     console.log(data.error)
                 } else {
                     this.setState({
-                        notifications: data.reverse(),
-                        loading: false
+                        notifications: data.reverse()
                     });
                     let checkNotification;
                     if (data.length === 0)
@@ -69,15 +65,12 @@ class Menu extends Component {
                     console.log(data.error)
                 } else {
                     this.setState({
-                        counter: data.length
+                        counter: data.length,
+                        done: true,
+                        userId: isAuthenticated().user._id
                     });
                 }
             })
-            this.setState({
-                loading: false
-            });
-        } else {
-            this.setState({ loading: false })
         }
     }
 
@@ -92,8 +85,7 @@ class Menu extends Component {
                     } else {
                         this.setState({
                             notifications: data.reverse(),
-                            notificationId: '',
-                            loading: false,
+                            notificationId: ''
                         });
                     }
                 });
@@ -102,7 +94,7 @@ class Menu extends Component {
                         console.log(data.error)
                     } else {
                         this.setState({
-                            counter: data.length
+                            counter: data.length,
                         });
                     }
                 })
@@ -118,7 +110,7 @@ class Menu extends Component {
             const notification = 'Please upload a profile photo!'
             const redirect = `/user/${notificationTo}`
             const notData = { notificationTo, notification, redirect }
-            create(token, notData).then(data => {
+            createNotification(token, notData).then(data => {
                 if (data.error) {
                     this.setState({ error: data.error });
                 }
@@ -157,7 +149,7 @@ class Menu extends Component {
     }
 
     render() {
-        const { processId, loading, notifications, counter, redirect } = this.state
+        const { processId, userId, notifications, counter, done } = this.state
         const isActive = (history, path) => {
             if (window.location.pathname === path) return { color: "#ff9900" }
             else return { color: "#ffffff" }
@@ -173,12 +165,11 @@ class Menu extends Component {
         return (
             <>
                 {
-                    loading ?
-                        <Loading />
+                    isAuthenticated() && !userId ?
+                        <Loading done={done} />
                         :
-
                         <div>
-                            {
+                            {(isAuthenticated() && isAuthenticated().user.userType !== 'admin') || !isAuthenticated() ?
                                 window.location.pathname === '/' ?
                                     <header id="home">
                                         <nav>
@@ -187,7 +178,7 @@ class Menu extends Component {
                                                 <img src={Logo} alt="YSU Online Thesis Management System" className="main-logo-black" />
                                                 <ul className="main-nav mr-auto js--main-nav">
                                                     <li><Link className="mainlink" to={'/home'}>Home</Link></li>
-                                                    <li><Link className="mainlink" to={"/researches"}>Research Topics</Link></li>
+                                                    <li><Link className="mainlink" to={"/researches"}>Topics</Link></li>
                                                     <li><Link className="mainlink" to={"/faculty-members"}>Faculty Members</Link></li>
                                                     {isAuthenticated() && (
                                                         processId !== "" ?
@@ -216,49 +207,60 @@ class Menu extends Component {
                                                                 </Link>
                                                             </li>
                                                             <li id="notification">
-                                                                <Link className="notification" id="notification-button">
+                                                                <Link className="notification" id="notification-button" data-toggle="modal" data-target="#exampleModal">
                                                                     <i className="fas fa-bell"></i><span className="badge badge-danger">{counter}</span>
                                                                 </Link>
-                                                                <div id="notifications">
-                                                                    <div id="notifications-header">
-                                                                        <h3>Notifications</h3>
-                                                                        <button
-                                                                            onClick={this.readAll}
-                                                                            id="notifications-header__btn"
-                                                                        >
-                                                                            Mark as read
-                                                                        </button>
-                                                                    </div>
-                                                                    <div style={{ height: '30rem' }}>
-                                                                        {notifications.map((notification, i) => (
-
-                                                                            <ul
-                                                                                key={notification._id}
-                                                                                className={!notification.isRead ? 'read' : null}>
-                                                                                <li
-                                                                                    id="notifications-list">
-
-                                                                                    <Link
+                                                                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                                    <div class="modal-dialog" role="document">
+                                                                        <div class="modal-content">
+                                                                            <div class="modal-header">
+                                                                                <h5 class="modal-title" id="exampleModalLabel">Notifications</h5>
+                                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                    <span aria-hidden="true">&times;</span>
+                                                                                </button>
+                                                                            </div>
+                                                                            <div class="modal-body">
+                                                                                {notifications.map((notification, i) => (
+                                                                                    <ul
                                                                                         key={notification._id}
-                                                                                        data-index={notification._id}
-                                                                                        name={notification.isRead ? 'true' : 'false'}
-                                                                                        onMouseOver={this.read}
-                                                                                        to={notification.redirect}
-                                                                                        target="_blank"
-                                                                                        id="notifications-list__btn">
-                                                                                        {notification.notification}
-                                                                                    </Link>
-                                                                                </li>
-                                                                            </ul>
+                                                                                        className={!notification.isRead ? 'read' : null}>
+                                                                                        <li
+                                                                                            id="notifications-list">
+                                                                                            {notification.notificationFrom && (
+                                                                                                notification.notificationFrom.photo.data === undefined ?
+                                                                                                    <img className="notifications-list__photo" id={``} src={DefaultProfile} /> :
+                                                                                                    <img className="notifications-list__photo"
+                                                                                                        src={`${process.env.REACT_APP_API_URL}/user/photo/${notification.notificationFrom._id}?${new Date().getTime()}`} />
 
-                                                                        ))}
+                                                                                            )}
+                                                                                            <Link
+                                                                                                key={notification._id}
+                                                                                                data-index={notification._id}
+                                                                                                name={notification.isRead ? 'true' : 'false'}
+                                                                                                onMouseOver={this.read}
+                                                                                                to={notification.redirect}
+                                                                                                target="_blank"
+                                                                                                id="notifications-list__btn">
+                                                                                                {notification.notification}
+                                                                                            </Link>
+                                                                                        </li>
+                                                                                    </ul>
+
+                                                                                ))}
+                                                                            </div>
+                                                                            <div class="modal-footer">
+                                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
-
-                                                                    <div className="seeAll"><a href="#">See All</a></div>
                                                                 </div>
                                                             </li>
                                                             <li>
-                                                                <Link to="/" className="mainlink" onClick={() => signout('/')}>Sign Out</Link>
+                                                                <Link to="/" className="mainlink" onClick={() => {
+                                                                    if (typeof window !== 'undefined') window.localStorage.removeItem('jwt');
+                                                                    signout()
+                                                                }}>Sign Out</Link>
                                                             </li>
                                                         </>
                                                     }
@@ -271,29 +273,31 @@ class Menu extends Component {
                                             <h1 className="heading-primary">
                                                 <span className="heading-primary-main">Youngstown&nbsp;State&nbsp;University</span>
                                                 <blockquote className="blockquote">
-                                                    <span className="heading-primary-sub">Web-based Thesis Process Workflow Management System   </span>
+                                                    <span className="heading-primary-sub">Web-based Thesis Workflow Management System   </span>
                                                 </blockquote>
                                                 {!isAuthenticated() ?
                                                     <>
                                                         <Link className="mainbtn mainbtn-full" to="/signup">Get Started</Link>
                                                         <a className="mainbtn mainbtn-ghost js--scroll-to-info" href="#">Learn More</a>
 
-                                                    </> : isAuthenticated() && processId === "" && isAuthenticated().user.userType === 'student' && !loading ?
-                                                        <>
-                                                            <Link className="mainbtn mainbtn-full" to="/thesis-process">Start Your Process</Link>
-
-                                                        </> : isAuthenticated() && processId !== "" && isAuthenticated().user.userType === 'student' && !loading ?
-                                                            <>
-                                                                <Link className="mainbtn mainbtn-full" to={`/thesis-process/${processId}`}>Continue Your Study</Link>
-
-                                                            </> : isAuthenticated().user.userType === 'faculty' ?
-                                                                <>
-                                                                    <Link className="mainbtn mainbtn-full" to={`/user/${isAuthenticated().user._id}`}>Go To Profile</Link>
-                                                                </> : ''
+                                                    </> : null
                                                 }
+                                                {
+                                                    isAuthenticated() && (
+                                                        processId === "" && isAuthenticated().user.userType === 'student' ?
+                                                            <>
+                                                                <Link className="mainbtn mainbtn-full" to="/thesis-process">Start Your Process</Link>
 
+                                                            </> : isAuthenticated() && processId !== "" && isAuthenticated().user.userType === 'student' ?
+                                                                <>
+                                                                    <Link className="mainbtn mainbtn-full" to={`/thesis-process/${processId}`}>Continue Your Study</Link>
 
-
+                                                                </> : isAuthenticated().user.userType === 'faculty' ?
+                                                                    <>
+                                                                        <Link className="mainbtn mainbtn-full" to={`/user/${isAuthenticated().user._id}`}>Go To Profile</Link>
+                                                                    </> : ''
+                                                    )
+                                                }
                                             </h1>
                                         </div>
                                     </header>
@@ -306,7 +310,7 @@ class Menu extends Component {
                                                     <Link className="mainlink" to="/">Home</Link>
                                                 </li>
                                                 <li>
-                                                    <Link className="mainlink" style={isActive(window.location.pathname, "/researches")} to="/researches">Research Topics</Link>
+                                                    <Link className="mainlink" style={isActive(window.location.pathname, "/researches")} to="/researches">Topics</Link>
                                                 </li>
                                                 <li>
                                                     <Link className="mainlink" style={isActive(window.location.pathname, "/faculty-members")} to="/faculty-members">Faculty Members</Link>
@@ -354,57 +358,60 @@ class Menu extends Component {
                                                                 </Link>
                                                         </li>
                                                         <li id="notification">
-                                                            <Link className="notification" id="notification-button">
+                                                            <Link className="notification" id="notification-button" data-toggle="modal" data-target="#exampleModal">
                                                                 <i className="fas fa-bell"></i><span className="badge badge-danger">{counter}</span>
                                                             </Link>
-                                                            <div id="notifications">
-                                                                <div id="notifications-header">
-                                                                    <h3>Notifications</h3>
-                                                                    <button
-                                                                        onClick={this.readAll}
-                                                                        id="notifications-header__btn"
-                                                                    >
-                                                                        Mark as read
-                                                                        </button>
-                                                                </div>
-                                                                <div style={{ height: '30rem' }}>
-                                                                    {notifications.map((notification, i) => (
-
-                                                                        <ul
-                                                                            key={notification._id}
-                                                                            className={!notification.isRead ? 'read' : null}>
-                                                                            <li
-                                                                                id="notifications-list">
-
-                                                                                <Link
+                                                            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                                <div class="modal-dialog" role="document">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="exampleModalLabel">Notifications</h5>
+                                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                <span aria-hidden="true">&times;</span>
+                                                                            </button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            {notifications.map((notification, i) => (
+                                                                                <ul
                                                                                     key={notification._id}
-                                                                                    data-index={notification._id}
-                                                                                    name={notification.isRead ? 'true' : 'false'}
-                                                                                    onMouseOver={this.read}
-                                                                                    to={notification.redirect}
-                                                                                    target="_blank"
-                                                                                    id="notifications-list__btn">
-                                                                                    {notification.notification}
-                                                                                </Link>
-                                                                            </li>
-                                                                        </ul>
+                                                                                    className={!notification.isRead ? 'read' : null}>
+                                                                                    <li
+                                                                                        id="notifications-list">
+                                                                                        {notification.notificationFrom && (
+                                                                                            notification.notificationFrom.photo.data === undefined ?
+                                                                                                <img className="notifications-list__photo" id={``} src={DefaultProfile} /> :
+                                                                                                <img className="notifications-list__photo"
+                                                                                                    src={`${process.env.REACT_APP_API_URL}/user/photo/${notification.notificationFrom._id}?${new Date().getTime()}`} />
 
-                                                                    ))}
+                                                                                        )}
+                                                                                        <Link
+                                                                                            key={notification._id}
+                                                                                            data-index={notification._id}
+                                                                                            name={notification.isRead ? 'true' : 'false'}
+                                                                                            onMouseOver={this.read}
+                                                                                            to={notification.redirect}
+                                                                                            target="_blank"
+                                                                                            id="notifications-list__btn">
+                                                                                            {notification.notification}
+                                                                                        </Link>
+                                                                                    </li>
+                                                                                </ul>
+
+                                                                            ))}
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
-
-                                                                <div className="seeAll"><a href="#">See All</a></div>
                                                             </div>
                                                         </li>
                                                         <li>
-                                                            <Link
-                                                                className="mainlink"
-                                                                style={
-                                                                    (isActive(window.location.pathname, "/signout"),
-                                                                        { cursor: "pointer", color: "#fff" })
-                                                                }
-                                                                onClick={() => signout('/')}>
-                                                                Sign Out
-                                                             </Link>
+                                                            <Link to="/" className="mainlink" onClick={() => {
+                                                                if (typeof window !== 'undefined') window.localStorage.removeItem('jwt');
+                                                                signout()
+                                                            }}>Sign Out</Link>
                                                         </li>
                                                     </>
                                                 }
@@ -413,6 +420,7 @@ class Menu extends Component {
                                             <a className="mobile-nav-icon js--nav-icon"><i className="icon ion-md-menu"></i></a>
                                         </div>
                                     </nav>
+                                : null
                             }
                         </div>
                 }
